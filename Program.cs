@@ -23,7 +23,8 @@ namespace migration_pair
             ctable = GetColumnsForTable(ctable);
             ctable = GetRows(ctable);
 
-            SaveResultsIntoFile(ctable, filePath);
+            var tableData = WriteResultsToObject(ctable);
+            SaveResultsIntoFile(tableData, filePath);
 
             session.Dispose();
             cluster.Dispose();
@@ -76,7 +77,7 @@ namespace migration_pair
             return ctable;
         }
 
-        static void SaveResultsIntoFile(CTable ctable, string filePath)
+        static StringBuilder WriteResultsToObject(CTable ctable)
         {
             var tableData = new StringBuilder();
 
@@ -97,6 +98,11 @@ namespace migration_pair
                 tableData.AppendLine(string.Join(",", rowToWrite));
             }
 
+            return tableData;
+        }
+
+        static void SaveResultsIntoFile(StringBuilder tableData, string filePath)
+        {
             File.WriteAllText(filePath, tableData.ToString());
         }
     }
