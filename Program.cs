@@ -80,6 +80,11 @@ namespace migration_pair
         {
             var tableData = new StringBuilder();
 
+            foreach (dynamic[] row in ctable.Rows)
+            {
+                tableData.AppendLine(string.Join(",", row));
+            }
+
             File.WriteAllText(filePath, tableData.ToString());
         }
     }
