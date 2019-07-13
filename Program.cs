@@ -19,7 +19,7 @@ namespace migration_pair
         {
             var ctable = new CTable(tableName, keyspace);
             ctable = GetColumnsForTable(ctable);
-            ctable = GetValuesForColumns(ctable);
+            ctable = GetRows(ctable);
 
             session.Dispose();
             cluster.Dispose();
@@ -53,18 +53,20 @@ namespace migration_pair
             return results.Columns[0].Type;
         }
 
-        static CTable GetValuesForColumns(CTable ctable)
+        static CTable GetRows(CTable ctable)
         {
             string cql = $"select * from {ctable.Keyspace}.{ctable.Name}";
             var statement = new SimpleStatement(cql);
             RowSet results = session.Execute(statement);
 
-            foreach (Row result in results.GetRows())
+            foreach (Row result in results)
             {
-                foreach (CColumn column in ctable.Columns)
-                {
-                    column.Values.Add(result.GetValue<dynamic>(column.Name));
-                }
+                dynamic[] row = new dynamic[result.Length];
+
+                for (int i = 0; i < result.Length; i++)
+                    row[i] = result[i];
+
+                ctable.Rows.Add(row);
             }
 
             return ctable;
