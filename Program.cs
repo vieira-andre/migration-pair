@@ -2,6 +2,8 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.IO;
+using System.Text;
 
 namespace migration_pair
 {
@@ -20,6 +22,8 @@ namespace migration_pair
             var ctable = new CTable(tableName, keyspace);
             ctable = GetColumnsForTable(ctable);
             ctable = GetRows(ctable);
+
+            SaveResultsIntoFile(ctable, filePath);
 
             session.Dispose();
             cluster.Dispose();
@@ -70,6 +74,13 @@ namespace migration_pair
             }
 
             return ctable;
+        }
+
+        static void SaveResultsIntoFile(CTable ctable, string filePath)
+        {
+            var tableData = new StringBuilder();
+
+            File.WriteAllText(filePath, tableData.ToString());
         }
     }
 
