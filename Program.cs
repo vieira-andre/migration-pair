@@ -7,7 +7,7 @@ namespace migration_pair
 {
     class Program
     {
-        private static readonly string[] endpoints = { ConfigurationManager.AppSettings["Endpoints"] };
+        private static readonly string[] endpoints = ConfigurationManager.AppSettings["Endpoints"].Split(',');
         private static readonly string keyspace = ConfigurationManager.AppSettings["Keyspace"];
         private static readonly string tableName = ConfigurationManager.AppSettings["Table_Name"];
         private static readonly string filePath = ConfigurationManager.AppSettings["File_Path"];
