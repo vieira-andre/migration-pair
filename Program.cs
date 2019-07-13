@@ -26,7 +26,7 @@ namespace migration_pair
 
         static CTable GetColumnsForTable(CTable ctable)
         {
-            string cql = ConfigurationManager.AppSettings["Select_Columns"];
+            string cql = ConfigurationManager.AppSettings["Select_ColumnFamily"];
             PreparedStatement pStatement = session.Prepare(cql);
 
             BoundStatement bStatement = pStatement.Bind(ctable.Name);
