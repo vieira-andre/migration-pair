@@ -76,12 +76,14 @@ namespace migration_pair
         public string Name { get; set; }
         public string Keyspace { get; set; }
         public List<CColumn> Columns { get; set; }
+        public List<dynamic[]> Rows { get; set; }
 
         public CTable(string name, string keyspace)
         {
             Name = name;
             Keyspace = keyspace;
             Columns = new List<CColumn>();
+            Rows = new List<dynamic[]>();
         }
     }
 
