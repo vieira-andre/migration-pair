@@ -1,5 +1,6 @@
 ﻿using Cassandra;
 using System;
+using System.Collections.Generic;
 
 namespace migration_pair
 {
@@ -22,11 +23,13 @@ namespace migration_pair
     {
         public string Name { get; set; }
         public string Keyspace { get; set; }
+        public List<CColumn> Columns { get; set; }
 
         public CTable(string name, string keyspace)
         {
             Name = name;
             Keyspace = keyspace;
+            Columns = new List<CColumn>();
         }
     }
 
