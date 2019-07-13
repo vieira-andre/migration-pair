@@ -20,13 +20,17 @@ namespace migration_pair
             var ctable = new CTable(tableName, keyspace);
             ctable = GetColumnsForTable(ctable);
 			
-			session.Dispose();
-			cluster.Dispose();
+            session.Dispose();
+            cluster.Dispose();
         }
 
         static CTable GetColumnsForTable(CTable ctable)
         {
             string cql = ConfigurationManager.AppSettings["Select_Columns"];
+            PreparedStatement pStatement = session.Prepare(cql);
+
+            BoundStatement bStatement = pStatement.Bind(ctable.Name);
+            RowSet results = session.Execute(bStatement);
 
             return ctable;
         }
