@@ -56,6 +56,16 @@ namespace migration_pair
         static CTable GetValuesForColumns(CTable ctable)
         {
             string cql = $"select * from {ctable.Keyspace}.{ctable.Name}";
+            var statement = new SimpleStatement(cql);
+            RowSet results = session.Execute(statement);
+
+            foreach (Row result in results.GetRows())
+            {
+                foreach (CColumn column in ctable.Columns)
+                {
+                    column.Values.Add(result.GetValue<dynamic>(column.Name));
+                }
+            }
 
             return ctable;
         }
