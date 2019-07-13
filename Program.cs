@@ -1,6 +1,7 @@
 ﻿using Cassandra;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 
 namespace migration_pair
 {
@@ -16,6 +17,14 @@ namespace migration_pair
         static void Main(string[] args)
         {
             var ctable = new CTable(tableName, keyspace);
+            ctable = GetColumnsForTable(ctable);
+        }
+
+        static CTable GetColumnsForTable(CTable ctable)
+        {
+            string cql = ConfigurationManager.AppSettings["Select_Columns"];
+
+            return ctable;
         }
     }
 
