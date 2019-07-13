@@ -15,7 +15,7 @@ namespace migration_pair
 
         static void Main(string[] args)
         {
-
+            var ctable = new CTable(tableName, keyspace);
         }
     }
 
