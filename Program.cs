@@ -1,4 +1,5 @@
 ﻿using Cassandra;
+using System;
 
 namespace migration_pair
 {
@@ -26,6 +27,18 @@ namespace migration_pair
         {
             Name = name;
             Keyspace = keyspace;
+        }
+    }
+
+    public class CColumn
+    {
+        public string Name { get; set; }
+        public Type Type { get; set; }
+
+        public CColumn(string name, Type type)
+        {
+            Name = name;
+            Type = type;
         }
     }
 }
