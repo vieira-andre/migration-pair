@@ -116,4 +116,16 @@ namespace migration_pair
             Type = type;
         }
     }
+
+    internal class CField
+    {
+        public dynamic Value { get; set; }
+        public Type DataType { get; set; }
+
+        public CField(dynamic value, Type dataType)
+        {
+            Value = value;
+            DataType = dataType;
+        }
+    }
 }
