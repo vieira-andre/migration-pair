@@ -27,7 +27,7 @@ namespace migration_pair
 
         static CTable GetColumnsForTable(CTable ctable)
         {
-            string cql = ConfigurationManager.AppSettings["Select_ColumnFamily"];
+            string cql = "SELECT * from system.schema_columns WHERE columnfamily_name=? ALLOW FILTERING";
             PreparedStatement pStatement = session.Prepare(cql);
 
             BoundStatement bStatement = pStatement.Bind(ctable.Name);
@@ -46,7 +46,7 @@ namespace migration_pair
 
         static Type GetColumnDataType(CTable ctable, string columnName)
         {
-            string cql = string.Format(ConfigurationManager.AppSettings["Select_Column"], columnName, ctable.Keyspace, ctable.Name);
+            string cql = $"SELECT {columnName} from {ctable.Keyspace}.{ctable.Name}";
             var statement = new SimpleStatement(cql);
 
             RowSet results = session.Execute(statement);
@@ -55,7 +55,7 @@ namespace migration_pair
 
         static CTable GetValuesForColumns(CTable ctable)
         {
-            string cql = string.Format(ConfigurationManager.AppSettings["Select_FromTable"], ctable.Keyspace, ctable.Name);
+            string cql = $"select * from {ctable.Keyspace}.{ctable.Name}";
 
             return ctable;
         }
