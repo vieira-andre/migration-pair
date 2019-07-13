@@ -88,6 +88,9 @@ namespace migration_pair
                 {
                     string valueToWrite = Convert.ToString(cfield.Value);
 
+                    if (cfield.DataType.Equals(typeof(string)) && !string.IsNullOrEmpty(valueToWrite))
+                        valueToWrite = string.Format("\"{0}\"", valueToWrite.Replace("\"", "\"\""));
+
                     rowToWrite.Add(valueToWrite);
                 }
 
