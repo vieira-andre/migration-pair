@@ -16,4 +16,10 @@ namespace migration_pair
 
         }
     }
+
+    public class CTable
+    {
+        public string Name { get; set; }
+        public string Keyspace { get; set; }
+    }
 }
