@@ -21,5 +21,11 @@ namespace migration_pair
     {
         public string Name { get; set; }
         public string Keyspace { get; set; }
+
+        public CTable(string name, string keyspace)
+        {
+            Name = name;
+            Keyspace = keyspace;
+        }
     }
 }
