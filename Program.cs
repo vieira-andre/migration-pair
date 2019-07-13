@@ -37,7 +37,7 @@ namespace migration_pair
             BoundStatement bStatement = pStatement.Bind(ctable.Name);
             RowSet results = session.Execute(bStatement);
 
-            foreach (Row result in results.GetRows())
+            foreach (Row result in results)
             {
                 var columnName = result.GetValue<string>("column_name");
                 var columnType = GetColumnDataType(ctable, columnName);
