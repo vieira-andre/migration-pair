@@ -7,9 +7,10 @@ namespace migration_pair
 {
     class Program
     {
-        private static readonly string[] endpoints = { "localhost" };
-        private static readonly string keyspace = null, tableName = null;
-        private static readonly string filePath = null;
+        private static readonly string[] endpoints = { ConfigurationManager.AppSettings["Endpoints"] };
+        private static readonly string keyspace = ConfigurationManager.AppSettings["Keyspace"];
+        private static readonly string tableName = ConfigurationManager.AppSettings["Table_Name"];
+        private static readonly string filePath = ConfigurationManager.AppSettings["File_Path"];
 
         private static Cluster cluster = Cluster.Builder().AddContactPoints(endpoints).Build();
         private static readonly ISession session = cluster.Connect();
