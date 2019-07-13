@@ -65,10 +65,10 @@ namespace migration_pair
 
             foreach (Row result in results)
             {
-                dynamic[] row = new dynamic[result.Length];
+                CField[] row = new CField[result.Length];
 
                 for (int i = 0; i < result.Length; i++)
-                    row[i] = result[i];
+                    row[i] = new CField(result[i], results.Columns[i].Type);
 
                 ctable.Rows.Add(row);
             }
