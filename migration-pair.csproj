@@ -6,4 +6,8 @@
     <RootNamespace>migration_pair</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CassandraCSharpDriver" Version="3.10.1" />
+  </ItemGroup>
+
 </Project>
