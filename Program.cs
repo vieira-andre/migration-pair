@@ -44,9 +44,9 @@ namespace migration_pair
             return ctable;
         }
 
-        static Type GetColumnDataType(CTable ctable, string column)
+        static Type GetColumnDataType(CTable ctable, string columnName)
         {
-            string cql = string.Format(ConfigurationManager.AppSettings["Select_Column"], column, ctable.Keyspace, ctable.Name);
+            string cql = string.Format(ConfigurationManager.AppSettings["Select_Column"], columnName, ctable.Keyspace, ctable.Name);
             var statement = new SimpleStatement(cql);
 
             RowSet results = session.Execute(statement);
