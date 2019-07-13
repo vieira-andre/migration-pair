@@ -89,13 +89,11 @@ namespace migration_pair
     {
         public string Name { get; set; }
         public Type Type { get; set; }
-        public List<dynamic> Values { get; set; }
 
         public CColumn(string name, Type type)
         {
             Name = name;
             Type = type;
-            Values = new List<dynamic>();
         }
     }
 }
