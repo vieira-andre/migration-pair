@@ -19,7 +19,8 @@ namespace migration_pair
         {
             var ctable = new CTable(tableName, keyspace);
             ctable = GetColumnsForTable(ctable);
-			
+            ctable = GetValuesForColumns(ctable);
+
             session.Dispose();
             cluster.Dispose();
         }
@@ -50,6 +51,13 @@ namespace migration_pair
 
             RowSet results = session.Execute(statement);
             return results.Columns[0].Type;
+        }
+
+        static CTable GetValuesForColumns(CTable ctable)
+        {
+            string cql = string.Format(ConfigurationManager.AppSettings["Select_FromTable"], ctable.Keyspace, ctable.Name);
+
+            return ctable;
         }
     }
 
