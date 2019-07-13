@@ -19,7 +19,7 @@ namespace migration_pair
         }
     }
 
-    public class CTable
+    internal class CTable
     {
         public string Name { get; set; }
         public string Keyspace { get; set; }
@@ -33,7 +33,7 @@ namespace migration_pair
         }
     }
 
-    public class CColumn
+    internal class CColumn
     {
         public string Name { get; set; }
         public Type Type { get; set; }
