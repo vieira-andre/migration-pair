@@ -80,9 +80,18 @@ namespace migration_pair
         {
             var tableData = new StringBuilder();
 
-            foreach (dynamic[] row in ctable.Rows)
+            foreach (CField[] row in ctable.Rows)
             {
-                tableData.AppendLine(string.Join(",", row));
+                var rowToWrite = new List<string>();
+
+                foreach (CField cfield in row)
+                {
+                    string valueToWrite = Convert.ToString(cfield.Value);
+
+                    rowToWrite.Add(valueToWrite);
+                }
+
+                tableData.AppendLine(string.Join(",", rowToWrite));
             }
 
             File.WriteAllText(filePath, tableData.ToString());
