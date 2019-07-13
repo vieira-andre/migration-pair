@@ -19,6 +19,9 @@ namespace migration_pair
         {
             var ctable = new CTable(tableName, keyspace);
             ctable = GetColumnsForTable(ctable);
+			
+			session.Dispose();
+			cluster.Dispose();
         }
 
         static CTable GetColumnsForTable(CTable ctable)
