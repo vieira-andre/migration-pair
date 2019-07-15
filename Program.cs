@@ -11,15 +11,15 @@ namespace migration_pair
 {
     class Program
     {
-        private static readonly string[] endpoints = ConfigurationManager.AppSettings["Endpoints"].Split(',');
-        private static readonly string keyspace = ConfigurationManager.AppSettings["Keyspace"];
-        private static readonly string tableName = ConfigurationManager.AppSettings["Table_Name"];
+        private static readonly string[] sourceEndpoints = ConfigurationManager.AppSettings["Source_Endpoints"].Split(',');
+        private static readonly string sourceKeyspace = ConfigurationManager.AppSettings["Source_Keyspace"];
+        private static readonly string sourceTableName = ConfigurationManager.AppSettings["Source_Table_Name"];
         private static readonly string filePath = ConfigurationManager.AppSettings["File_Path"];
 
         private static readonly string taskToPerform = ConfigurationManager.AppSettings["TaskToPerform"];
 
-        private static Cluster cluster = Cluster.Builder().AddContactPoints(endpoints).Build();
-        private static readonly ISession session = cluster.Connect();
+        private static Cluster sourceCluster = Cluster.Builder().AddContactPoints(sourceEndpoints).Build();
+        private static readonly ISession sourceSession = sourceCluster.Connect();
 
         static void Main(string[] args)
         {
@@ -46,13 +46,13 @@ namespace migration_pair
                     break;
             }
 
-            session.Dispose();
-            cluster.Dispose();
+            sourceSession.Dispose();
+            sourceCluster.Dispose();
         }
 
         private static void ExtractionPhase()
         {
-            var ctable = new CTable(tableName, keyspace);
+            var ctable = new CTable(sourceTableName, sourceKeyspace);
             GetRows(ref ctable);
 
             var tableData = WriteResultsToObject(ctable);
@@ -70,7 +70,7 @@ namespace migration_pair
         {
             string cql = $"SELECT * FROM {ctable.Keyspace}.{ctable.Name}";
             var statement = new SimpleStatement(cql);
-            RowSet results = session.Execute(statement);
+            RowSet results = sourceSession.Execute(statement);
 
             foreach (Row result in results)
             {
@@ -143,9 +143,9 @@ namespace migration_pair
         {
             var columns = new List<CColumn>();
 
-            string cql = $"SELECT * FROM {keyspace}.{tableName} LIMIT 1";
+            string cql = $"SELECT * FROM {sourceKeyspace}.{sourceTableName} LIMIT 1";
             var statement = new SimpleStatement(cql);
-            RowSet results = session.Execute(statement);
+            RowSet results = sourceSession.Execute(statement);
 
             foreach (CqlColumn column in results.Columns)
                 columns.Add(new CColumn(column.Name, column.Type));
@@ -158,8 +158,8 @@ namespace migration_pair
             string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
             string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
 
-            string cql = $"INSERT INTO {keyspace}.{tableName} ({columnsAsString}) VALUES ({valuesPlaceholders})";
-            PreparedStatement pStatement = session.Prepare(cql);
+            string cql = $"INSERT INTO {sourceKeyspace}.{sourceTableName} ({columnsAsString}) VALUES ({valuesPlaceholders})";
+            PreparedStatement pStatement = sourceSession.Prepare(cql);
 
             foreach (string[] row in tableData)
             {
@@ -173,7 +173,7 @@ namespace migration_pair
                 }
 
                 BoundStatement bStatement = pStatement.Bind(preparedRow.ToArray<dynamic>());
-                _ = session.Execute(bStatement);
+                _ = sourceSession.Execute(bStatement);
             }
         }
 
