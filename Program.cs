@@ -127,6 +127,9 @@ namespace migration_pair
             string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
             string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
 
+            string cql = $"INSERT INTO {keyspace}.{tableName} ({columnsAsString}) VALUES ({valuesPlaceholders})";
+            PreparedStatement pStatement = session.Prepare(cql);
+
             foreach (string[] row in tableData)
             {
                 var preparedRow = new List<dynamic>(row.Length);
@@ -137,6 +140,9 @@ namespace migration_pair
                     preparedRow.Add(ConvertFieldValueToProperType(row[i], columns[i].DataType));
                     i++;
                 }
+
+                BoundStatement bStatement = pStatement.Bind(preparedRow.ToArray<dynamic>());
+                _ = session.Execute(bStatement);
             }
         }
 
