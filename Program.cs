@@ -138,6 +138,7 @@ namespace migration_pair
 
         private static void SaveResultsIntoFile(StringBuilder tableData, string filePath)
         {
+            _ = Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             File.WriteAllText(filePath, tableData.ToString());
         }
 
