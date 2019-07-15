@@ -197,4 +197,11 @@ namespace migration_pair
             DataType = dataType;
         }
     }
+
+    internal enum KindOfTask
+    {
+        Extract,
+        Insert,
+        ExtractAndInsert
+    }
 }
