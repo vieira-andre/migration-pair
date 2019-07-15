@@ -26,6 +26,9 @@ namespace migration_pair
         private static Cluster sourceCluster = Cluster.Builder().AddContactPoints(sourceEndpoints).Build();
         private static readonly ISession sourceSession = sourceCluster.Connect();
 
+        private static Cluster targetCluster = Cluster.Builder().AddContactPoints(targetEndpoints).Build();
+        private static readonly ISession targetSession = targetCluster.Connect();
+
         static void Main(string[] args)
         {
             Enum.TryParse(taskToPerform, out TaskToPerform procedure);
