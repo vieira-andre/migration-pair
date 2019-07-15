@@ -130,14 +130,20 @@ namespace migration_pair
                 foreach (CColumn column in columns)
                 {
                     for (int i = 0; i < row.Length; i++)
-                        preparedRow.Add(ConvertFieldValueToProperType(row[i]));
+                        preparedRow.Add(ConvertFieldValueToProperType(row[i], column.DataType));
                 }
             }
         }
 
-        private static dynamic ConvertFieldValueToProperType(string v)
+        private static dynamic ConvertFieldValueToProperType(string fieldValue, Type columnDataType)
         {
-            throw new NotImplementedException();
+            if (columnDataType.Equals(typeof(long))) { return Convert.ToInt64(fieldValue); }
+            if (columnDataType.Equals(typeof(int))) { return Convert.ToInt32(fieldValue); }
+            if (columnDataType.Equals(typeof(short))) { return Convert.ToInt16(fieldValue); }
+            if (columnDataType.Equals(typeof(DateTimeOffset))) { return DateTimeOffset.Parse(fieldValue); }
+            if (columnDataType.Equals(typeof(bool))) { return bool.Parse(fieldValue); }
+
+            return fieldValue;
         }
     }
 
