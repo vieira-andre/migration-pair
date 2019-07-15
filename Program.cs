@@ -27,6 +27,7 @@ namespace migration_pair
             //SaveResultsIntoFile(tableData, filePath);
 
             var tableData = ReadFromCsv(filePath);
+            List<CColumn> columns = GetColumnsForTable();
             InsertDataIntoTable(ref tableData);
 
             session.Dispose();
@@ -35,7 +36,7 @@ namespace migration_pair
 
         private static void GetRows(ref CTable ctable)
         {
-            string cql = $"select * from {ctable.Keyspace}.{ctable.Name}";
+            string cql = $"SELECT * FROM {ctable.Keyspace}.{ctable.Name}";
             var statement = new SimpleStatement(cql);
             RowSet results = session.Execute(statement);
 
@@ -104,6 +105,20 @@ namespace migration_pair
             }
 
             return tableData;
+        }
+
+        private static List<CColumn> GetColumnsForTable()
+        {
+            var columns = new List<CColumn>();
+
+            string cql = $"SELECT * FROM {keyspace}.{tableName} LIMIT 1";
+            var statement = new SimpleStatement(cql);
+            RowSet results = session.Execute(statement);
+
+            foreach (CqlColumn column in results.Columns)
+                columns.Add(new CColumn(column.Name, column.Type));
+
+            return columns;
         }
 
         private static void InsertDataIntoTable(ref List<string[]> tableData)
