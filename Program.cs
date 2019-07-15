@@ -198,7 +198,7 @@ namespace migration_pair
         }
     }
 
-    internal enum KindOfTask
+    internal enum TaskToPerform
     {
         Extract,
         Insert,
