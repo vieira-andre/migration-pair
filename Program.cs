@@ -1,4 +1,5 @@
 ﻿using Cassandra;
+using CsvHelper;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -73,6 +74,33 @@ namespace migration_pair
         private static void SaveResultsIntoFile(StringBuilder tableData, string filePath)
         {
             File.WriteAllText(filePath, tableData.ToString());
+        }
+
+        private static List<string[]> ReadFromCsv(string filePath)
+        {
+            var tableData = new List<string[]>();
+
+            using (TextReader reader = new StreamReader(filePath))
+            using (var csvReader = new CsvReader(reader))
+            {
+                csvReader.Configuration.Delimiter = ",";
+                csvReader.Configuration.HasHeaderRecord = false;
+                csvReader.Configuration.MissingFieldFound = null;
+
+                var records = csvReader.GetRecords<dynamic>();
+
+                foreach (IDictionary<string, object> record in records)
+                {
+                    var row = new List<string>(record.Values.Count);
+
+                    foreach (string value in record.Values)
+                        row.Add(value);
+
+                    tableData.Add(row.ToArray());
+                }
+            }
+
+            return tableData;
         }
     }
 
