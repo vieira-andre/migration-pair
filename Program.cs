@@ -67,7 +67,7 @@ namespace migration_pair
                 CField[] row = new CField[result.Length];
 
                 for (int i = 0; i < result.Length; i++)
-                    row[i] = new CField(result[i], results.Columns[i].Type);
+                    row[i] = new CField(result[i], results.Columns[i].Name, results.Columns[i].Type);
 
                 ctable.Rows.Add(row);
             }
