@@ -55,6 +55,7 @@ namespace migration_pair
             }
 
             DisposeSourceSessionAndCluster();
+            DisposeTargetSessionAndCluster();
         }
 
         private static void ExtractionPhase()
@@ -199,6 +200,12 @@ namespace migration_pair
         {
             sourceSession.Dispose();
             sourceCluster.Dispose();
+        }
+
+        private static void DisposeTargetSessionAndCluster()
+        {
+            targetSession.Dispose();
+            targetCluster.Dispose();
         }
     }
 
