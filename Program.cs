@@ -34,7 +34,7 @@ namespace migration_pair
 
         static void Main(string[] args)
         {
-            Enum.TryParse(taskToPerform, out TaskToPerform procedure);
+            Enum.TryParse(taskToPerform, true, out TaskToPerform procedure);
 
             switch (procedure)
             {
