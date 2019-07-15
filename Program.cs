@@ -12,6 +12,9 @@ namespace migration_pair
     class Program
     {
         #region Configs
+        private static readonly string taskToPerform = ConfigurationManager.AppSettings["TaskToPerform"];
+        private static readonly string filePath = ConfigurationManager.AppSettings["File_Path"];
+
         #region Source configs
         private static readonly string[] sourceEndpoints = ConfigurationManager.AppSettings["Source_Endpoints"].Split(',');
         private static readonly string sourceKeyspace = ConfigurationManager.AppSettings["Source_Keyspace"];
@@ -27,9 +30,6 @@ namespace migration_pair
         private static readonly Cluster targetCluster = Cluster.Builder().AddContactPoints(targetEndpoints).Build();
         private static readonly ISession targetSession = targetCluster.Connect();
         #endregion
-
-        private static readonly string filePath = ConfigurationManager.AppSettings["File_Path"];
-        private static readonly string taskToPerform = ConfigurationManager.AppSettings["TaskToPerform"];
         #endregion
 
         static void Main(string[] args)
