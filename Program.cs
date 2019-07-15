@@ -23,9 +23,26 @@ namespace migration_pair
 
         static void Main(string[] args)
         {
-            ExtractionPhase();
+            Enum.TryParse(taskToPerform, out TaskToPerform procedure);
 
-            InsertionPhase();
+            switch (procedure)
+            {
+                case TaskToPerform.Extract:
+                    ExtractionPhase();
+                    break;
+
+                case TaskToPerform.Insert:
+                    InsertionPhase();
+                    break;
+
+                case TaskToPerform.ExtractAndInsert:
+                    ExtractionPhase();
+                    InsertionPhase();
+                    break;
+
+                default:
+                    break;
+            }
 
             session.Dispose();
             cluster.Dispose();
