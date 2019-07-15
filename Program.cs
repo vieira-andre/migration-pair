@@ -26,6 +26,9 @@ namespace migration_pair
             //var tableData = WriteResultsToObject(ctable);
             //SaveResultsIntoFile(tableData, filePath);
 
+            var tableData = ReadFromCsv(filePath);
+            InsertDataIntoTable(ref tableData);
+
             session.Dispose();
             cluster.Dispose();
         }
@@ -101,6 +104,11 @@ namespace migration_pair
             }
 
             return tableData;
+        }
+
+        private static void InsertDataIntoTable(ref List<string[]> tableData)
+        {
+            throw new NotImplementedException();
         }
     }
 
