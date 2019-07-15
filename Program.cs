@@ -30,7 +30,7 @@ namespace migration_pair
             cluster.Dispose();
         }
 
-        static void GetColumnsForTable(ref CTable ctable)
+        private static void GetColumnsForTable(ref CTable ctable)
         {
             string cql = "SELECT * from system.schema_columns WHERE columnfamily_name=? ALLOW FILTERING";
             PreparedStatement pStatement = session.Prepare(cql);
@@ -47,7 +47,7 @@ namespace migration_pair
             }
         }
 
-        static Type GetColumnDataType(CTable ctable, string columnName)
+        private static Type GetColumnDataType(CTable ctable, string columnName)
         {
             string cql = $"SELECT {columnName} from {ctable.Keyspace}.{ctable.Name}";
             var statement = new SimpleStatement(cql);
@@ -56,7 +56,7 @@ namespace migration_pair
             return results.Columns[0].Type;
         }
 
-        static void GetRows(ref CTable ctable)
+        private static void GetRows(ref CTable ctable)
         {
             string cql = $"select * from {ctable.Keyspace}.{ctable.Name}";
             var statement = new SimpleStatement(cql);
@@ -73,7 +73,7 @@ namespace migration_pair
             }
         }
 
-        static StringBuilder WriteResultsToObject(CTable ctable)
+        private static StringBuilder WriteResultsToObject(CTable ctable)
         {
             var tableData = new StringBuilder();
 
