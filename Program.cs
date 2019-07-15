@@ -16,6 +16,8 @@ namespace migration_pair
         private static readonly string tableName = ConfigurationManager.AppSettings["Table_Name"];
         private static readonly string filePath = ConfigurationManager.AppSettings["File_Path"];
 
+        private static readonly string taskToPerform = ConfigurationManager.AppSettings["TaskToPerform"];
+
         private static Cluster cluster = Cluster.Builder().AddContactPoints(endpoints).Build();
         private static readonly ISession session = cluster.Connect();
 
