@@ -21,11 +21,11 @@ namespace migration_pair
 
         static void Main(string[] args)
         {
-            //var ctable = new CTable(tableName, keyspace);
-            //GetRows(ref ctable);
+            var ctable = new CTable(tableName, keyspace);
+            GetRows(ref ctable);
 
-            //var tableData = WriteResultsToObject(ctable);
-            //SaveResultsIntoFile(tableData, filePath);
+            var tableData = WriteResultsToObject(ctable);
+            SaveResultsIntoFile(tableData, filePath);
 
             var tableData = ReadFromCsv(filePath);
             List<CColumn> columns = GetColumnsForTable();
