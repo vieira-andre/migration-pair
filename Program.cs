@@ -14,6 +14,11 @@ namespace migration_pair
         private static readonly string[] sourceEndpoints = ConfigurationManager.AppSettings["Source_Endpoints"].Split(',');
         private static readonly string sourceKeyspace = ConfigurationManager.AppSettings["Source_Keyspace"];
         private static readonly string sourceTableName = ConfigurationManager.AppSettings["Source_Table_Name"];
+
+        private static readonly string[] targetEndpoints = ConfigurationManager.AppSettings["Target_Endpoints"].Split(',');
+        private static readonly string targetKeyspace = ConfigurationManager.AppSettings["Target_Keyspace"];
+        private static readonly string targetTableName = ConfigurationManager.AppSettings["Target_Table_Name"];
+
         private static readonly string filePath = ConfigurationManager.AppSettings["File_Path"];
 
         private static readonly string taskToPerform = ConfigurationManager.AppSettings["TaskToPerform"];
