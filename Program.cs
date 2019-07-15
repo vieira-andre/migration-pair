@@ -53,7 +53,7 @@ namespace migration_pair
 
             foreach (CField[] row in ctable.Rows)
             {
-                var rowToWrite = new List<string>();
+                var rowToWrite = new List<string>(row.Length);
 
                 foreach (CField cfield in row)
                 {
