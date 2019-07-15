@@ -19,16 +19,16 @@ namespace migration_pair
         private static readonly string[] sourceEndpoints = ConfigurationManager.AppSettings["Source_Endpoints"].Split(',');
         private static readonly string sourceKeyspace = ConfigurationManager.AppSettings["Source_Keyspace"];
         private static readonly string sourceTableName = ConfigurationManager.AppSettings["Source_Table_Name"];
-        private static readonly Cluster sourceCluster = Cluster.Builder().AddContactPoints(sourceEndpoints).Build();
-        private static readonly ISession sourceSession = sourceCluster.Connect();
+        private static Cluster sourceCluster;
+        private static ISession sourceSession;
         #endregion
 
         #region Target configs
         private static readonly string[] targetEndpoints = ConfigurationManager.AppSettings["Target_Endpoints"].Split(',');
         private static readonly string targetKeyspace = ConfigurationManager.AppSettings["Target_Keyspace"];
         private static readonly string targetTableName = ConfigurationManager.AppSettings["Target_Table_Name"];
-        private static readonly Cluster targetCluster = Cluster.Builder().AddContactPoints(targetEndpoints).Build();
-        private static readonly ISession targetSession = targetCluster.Connect();
+        private static Cluster targetCluster;
+        private static ISession targetSession;
         #endregion
         #endregion
 
@@ -39,16 +39,26 @@ namespace migration_pair
             switch (procedure)
             {
                 case TaskToPerform.Extract:
+                    BuildSourceClusterAndSession();
                     ExtractionPhase();
+                    DisposeSourceSessionAndCluster();
                     break;
 
                 case TaskToPerform.Insert:
+                    BuildTargetClusterAndSession();
                     InsertionPhase();
+                    DisposeTargetSessionAndCluster();
                     break;
 
                 case TaskToPerform.ExtractAndInsert:
+                    BuildSourceClusterAndSession();
+                    BuildTargetClusterAndSession();
+
                     ExtractionPhase();
                     InsertionPhase();
+
+                    DisposeSourceSessionAndCluster();
+                    DisposeTargetSessionAndCluster();
                     break;
 
                 default:
@@ -56,9 +66,18 @@ namespace migration_pair
                     _ = Console.ReadKey();
                     break;
             }
+        }
 
-            DisposeSourceSessionAndCluster();
-            DisposeTargetSessionAndCluster();
+        private static void BuildSourceClusterAndSession()
+        {
+            sourceCluster = Cluster.Builder().AddContactPoints(sourceEndpoints).Build();
+            sourceSession = sourceCluster.Connect();
+        }
+
+        private static void BuildTargetClusterAndSession()
+        {
+            targetCluster = Cluster.Builder().AddContactPoints(targetEndpoints).Build();
+            targetSession = targetCluster.Connect();
         }
 
         private static void ExtractionPhase()
