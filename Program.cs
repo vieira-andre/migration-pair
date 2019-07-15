@@ -28,7 +28,7 @@ namespace migration_pair
 
             var tableData = ReadFromCsv(filePath);
             List<CColumn> columns = GetColumnsForTable();
-            InsertDataIntoTable(ref tableData);
+            InsertDataIntoTable(ref tableData, ref columns);
 
             session.Dispose();
             cluster.Dispose();
@@ -121,7 +121,21 @@ namespace migration_pair
             return columns;
         }
 
-        private static void InsertDataIntoTable(ref List<string[]> tableData)
+        private static void InsertDataIntoTable(ref List<string[]> tableData, ref List<CColumn> columns)
+        {
+            foreach (string[] row in tableData)
+            {
+                var preparedRow = new List<dynamic>(row.Length);
+
+                foreach (CColumn column in columns)
+                {
+                    for (int i = 0; i < row.Length; i++)
+                        preparedRow.Add(ConvertFieldValueToProperType(row[i]));
+                }
+            }
+        }
+
+        private static dynamic ConvertFieldValueToProperType(string v)
         {
             throw new NotImplementedException();
         }
