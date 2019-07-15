@@ -12,7 +12,7 @@ namespace migration_pair
     class Program
     {
         #region Configs
-        private static readonly string taskToPerform = ConfigurationManager.AppSettings["TaskToPerform"];
+        private static readonly string taskToPerform = ConfigurationManager.AppSettings["Task_To_Perform"];
         private static readonly string filePath = ConfigurationManager.AppSettings["File_Path"];
 
         #region Source configs
@@ -62,7 +62,7 @@ namespace migration_pair
                     break;
 
                 default:
-                    Console.WriteLine("[Error] Config entry \"TaskToPerfom\" either unspecified or misspecified.");
+                    Console.WriteLine("[Error] Config entry \"Task_To_Perfom\" either unspecified or misspecified.");
                     _ = Console.ReadKey();
                     break;
             }
