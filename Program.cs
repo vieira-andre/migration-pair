@@ -25,9 +25,7 @@ namespace migration_pair
         {
             ExtractionPhase();
 
-            var tableData = ReadFromCsv(filePath);
-            List<CColumn> columns = GetColumnsForTable();
-            InsertDataIntoTable(ref tableData, ref columns);
+            InsertionPhase();
 
             session.Dispose();
             cluster.Dispose();
@@ -40,6 +38,13 @@ namespace migration_pair
 
             var tableData = WriteResultsToObject(ctable);
             SaveResultsIntoFile(tableData, filePath);
+        }
+
+        private static void InsertionPhase()
+        {
+            var tableData = ReadFromCsv(filePath);
+            List<CColumn> columns = GetColumnsForTable();
+            InsertDataIntoTable(ref tableData, ref columns);
         }
 
         private static void GetRows(ref CTable ctable)
