@@ -11,23 +11,26 @@ namespace migration_pair
 {
     class Program
     {
+        #region Configs
+        #region Source configs
         private static readonly string[] sourceEndpoints = ConfigurationManager.AppSettings["Source_Endpoints"].Split(',');
         private static readonly string sourceKeyspace = ConfigurationManager.AppSettings["Source_Keyspace"];
         private static readonly string sourceTableName = ConfigurationManager.AppSettings["Source_Table_Name"];
+        private static readonly Cluster sourceCluster = Cluster.Builder().AddContactPoints(sourceEndpoints).Build();
+        private static readonly ISession sourceSession = sourceCluster.Connect();
+        #endregion
 
+        #region Target configs
         private static readonly string[] targetEndpoints = ConfigurationManager.AppSettings["Target_Endpoints"].Split(',');
         private static readonly string targetKeyspace = ConfigurationManager.AppSettings["Target_Keyspace"];
         private static readonly string targetTableName = ConfigurationManager.AppSettings["Target_Table_Name"];
-
-        private static readonly string filePath = ConfigurationManager.AppSettings["File_Path"];
-
-        private static readonly string taskToPerform = ConfigurationManager.AppSettings["TaskToPerform"];
-
-        private static readonly Cluster sourceCluster = Cluster.Builder().AddContactPoints(sourceEndpoints).Build();
-        private static readonly ISession sourceSession = sourceCluster.Connect();
-
         private static readonly Cluster targetCluster = Cluster.Builder().AddContactPoints(targetEndpoints).Build();
         private static readonly ISession targetSession = targetCluster.Connect();
+        #endregion
+
+        private static readonly string filePath = ConfigurationManager.AppSettings["File_Path"];
+        private static readonly string taskToPerform = ConfigurationManager.AppSettings["TaskToPerform"];
+        #endregion
 
         static void Main(string[] args)
         {
