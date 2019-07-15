@@ -54,8 +54,7 @@ namespace migration_pair
                     break;
             }
 
-            sourceSession.Dispose();
-            sourceCluster.Dispose();
+            DisposeSourceSessionAndCluster();
         }
 
         private static void ExtractionPhase()
@@ -194,6 +193,12 @@ namespace migration_pair
             if (columnDataType.Equals(typeof(bool))) { return bool.Parse(fieldValue); }
 
             return fieldValue;
+        }
+
+        private static void DisposeSourceSessionAndCluster()
+        {
+            sourceSession.Dispose();
+            sourceCluster.Dispose();
         }
     }
 
