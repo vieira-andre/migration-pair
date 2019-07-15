@@ -136,7 +136,7 @@ namespace migration_pair
             }
         }
 
-        private static dynamic ConvertFieldValueToProperType(string fieldValue, Type columnDataType)
+        private static dynamic ConvertFieldValueToProperType(dynamic fieldValue, Type columnDataType)
         {
             if (columnDataType.Equals(typeof(long))) { return Convert.ToInt64(fieldValue); }
             if (columnDataType.Equals(typeof(int))) { return Convert.ToInt32(fieldValue); }
