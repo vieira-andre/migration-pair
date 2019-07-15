@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace migration_pair
@@ -123,6 +124,9 @@ namespace migration_pair
 
         private static void InsertDataIntoTable(ref List<string[]> tableData, ref List<CColumn> columns)
         {
+            string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
+            string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
+
             foreach (string[] row in tableData)
             {
                 var preparedRow = new List<dynamic>(row.Length);
