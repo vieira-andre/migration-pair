@@ -23,10 +23,10 @@ namespace migration_pair
 
         private static readonly string taskToPerform = ConfigurationManager.AppSettings["TaskToPerform"];
 
-        private static Cluster sourceCluster = Cluster.Builder().AddContactPoints(sourceEndpoints).Build();
+        private static readonly Cluster sourceCluster = Cluster.Builder().AddContactPoints(sourceEndpoints).Build();
         private static readonly ISession sourceSession = sourceCluster.Connect();
 
-        private static Cluster targetCluster = Cluster.Builder().AddContactPoints(targetEndpoints).Build();
+        private static readonly Cluster targetCluster = Cluster.Builder().AddContactPoints(targetEndpoints).Build();
         private static readonly ISession targetSession = targetCluster.Connect();
 
         static void Main(string[] args)
