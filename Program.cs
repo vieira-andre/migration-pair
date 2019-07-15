@@ -127,10 +127,11 @@ namespace migration_pair
             {
                 var preparedRow = new List<dynamic>(row.Length);
 
-                foreach (CColumn column in columns)
+                int i = 0;
+                while (i < row.Length)
                 {
-                    for (int i = 0; i < row.Length; i++)
-                        preparedRow.Add(ConvertFieldValueToProperType(row[i], column.DataType));
+                    preparedRow.Add(ConvertFieldValueToProperType(row[i], columns[i].DataType));
+                    i++;
                 }
             }
         }
