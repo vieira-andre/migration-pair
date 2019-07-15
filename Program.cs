@@ -23,11 +23,7 @@ namespace migration_pair
 
         static void Main(string[] args)
         {
-            var ctable = new CTable(tableName, keyspace);
-            GetRows(ref ctable);
-
-            var tableData = WriteResultsToObject(ctable);
-            SaveResultsIntoFile(tableData, filePath);
+            ExtractionPhase();
 
             var tableData = ReadFromCsv(filePath);
             List<CColumn> columns = GetColumnsForTable();
@@ -35,6 +31,15 @@ namespace migration_pair
 
             session.Dispose();
             cluster.Dispose();
+        }
+
+        private static void ExtractionPhase()
+        {
+            var ctable = new CTable(tableName, keyspace);
+            GetRows(ref ctable);
+
+            var tableData = WriteResultsToObject(ctable);
+            SaveResultsIntoFile(tableData, filePath);
         }
 
         private static void GetRows(ref CTable ctable)
