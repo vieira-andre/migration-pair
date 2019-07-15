@@ -39,26 +39,16 @@ namespace migration_pair
             switch (procedure)
             {
                 case TaskToPerform.Extract:
-                    BuildSourceClusterAndSession();
                     ExtractionPhase();
-                    DisposeSourceSessionAndCluster();
                     break;
 
                 case TaskToPerform.Insert:
-                    BuildTargetClusterAndSession();
                     InsertionPhase();
-                    DisposeTargetSessionAndCluster();
                     break;
 
                 case TaskToPerform.ExtractAndInsert:
-                    BuildSourceClusterAndSession();
-                    BuildTargetClusterAndSession();
-
                     ExtractionPhase();
                     InsertionPhase();
-
-                    DisposeSourceSessionAndCluster();
-                    DisposeTargetSessionAndCluster();
                     break;
 
                 default:
@@ -82,8 +72,12 @@ namespace migration_pair
 
         private static void ExtractionPhase()
         {
+            BuildSourceClusterAndSession();
+
             var ctable = new CTable(sourceTableName, sourceKeyspace);
             GetRows(ref ctable);
+
+            DisposeSourceSessionAndCluster();
 
             var tableData = WriteResultsToObject(ctable);
             SaveResultsIntoFile(tableData, filePath);
@@ -92,8 +86,13 @@ namespace migration_pair
         private static void InsertionPhase()
         {
             var tableData = ReadFromCsv(filePath);
+
+            BuildTargetClusterAndSession();
+
             List<CColumn> columns = GetColumnsForTable();
             InsertDataIntoTable(ref tableData, ref columns);
+
+            DisposeTargetSessionAndCluster();
         }
 
         private static void GetRows(ref CTable ctable)
