@@ -97,7 +97,7 @@ namespace migration_pair
             return tableData;
         }
 
-        static void SaveResultsIntoFile(StringBuilder tableData, string filePath)
+        private static void SaveResultsIntoFile(StringBuilder tableData, string filePath)
         {
             File.WriteAllText(filePath, tableData.ToString());
         }
