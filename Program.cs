@@ -151,9 +151,9 @@ namespace migration_pair
         {
             var columns = new List<CColumn>();
 
-            string cql = $"SELECT * FROM {sourceKeyspace}.{sourceTableName} LIMIT 1";
+            string cql = $"SELECT * FROM {targetKeyspace}.{targetTableName} LIMIT 1";
             var statement = new SimpleStatement(cql);
-            RowSet results = sourceSession.Execute(statement);
+            RowSet results = targetSession.Execute(statement);
 
             foreach (CqlColumn column in results.Columns)
                 columns.Add(new CColumn(column.Name, column.Type));
@@ -166,8 +166,8 @@ namespace migration_pair
             string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
             string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
 
-            string cql = $"INSERT INTO {sourceKeyspace}.{sourceTableName} ({columnsAsString}) VALUES ({valuesPlaceholders})";
-            PreparedStatement pStatement = sourceSession.Prepare(cql);
+            string cql = $"INSERT INTO {targetKeyspace}.{targetTableName} ({columnsAsString}) VALUES ({valuesPlaceholders})";
+            PreparedStatement pStatement = targetSession.Prepare(cql);
 
             foreach (string[] row in tableData)
             {
@@ -181,7 +181,7 @@ namespace migration_pair
                 }
 
                 BoundStatement bStatement = pStatement.Bind(preparedRow.ToArray<dynamic>());
-                _ = sourceSession.Execute(bStatement);
+                _ = targetSession.Execute(bStatement);
             }
         }
 
