@@ -107,10 +107,9 @@ namespace migration_pair
 
                 for (int i = 0; i < result.Length; i++)
                 {
-                    if (results.Columns[i].Type.IsAssignableFrom(typeof(DateTimeOffset)))
-                        row[i] = new CField(((DateTimeOffset)result[i]).ToUnixTimeMilliseconds(), results.Columns[i].Name, typeof(long));
-                    else
-                        row[i] = new CField(result[i], results.Columns[i].Name, results.Columns[i].Type);
+                    row[i] = results.Columns[i].Type.IsAssignableFrom(typeof(DateTimeOffset))
+                        ? new CField(((DateTimeOffset)result[i]).ToUnixTimeMilliseconds(), results.Columns[i].Name, typeof(long))
+                        : new CField(result[i], results.Columns[i].Name, results.Columns[i].Type);
                 }
 
                 ctable.Rows.Add(row);
