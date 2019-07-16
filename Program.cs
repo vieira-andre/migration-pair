@@ -44,7 +44,7 @@ namespace migration_pair
                     break;
 
                 default:
-                    Console.WriteLine("[Error] Config entry \"Task_To_Perfom\" is either unspecified or misspecified.");
+                    Console.WriteLine("[Error] Config entry \"Task_To_Perform\" is either unspecified or misspecified.");
                     _ = Console.ReadKey();
                     break;
             }
