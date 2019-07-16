@@ -9,11 +9,11 @@ namespace migration_pair.Helper
         private const string dateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffzzz";
         private static readonly string logFilePath = ConfigurationManager.AppSettings["Log_File_Path"];
 
-        internal async static void Write(string message)
+        internal static void Write(string message)
         {
             _ = Directory.CreateDirectory(Path.GetDirectoryName(logFilePath));
 
-            await File.AppendAllTextAsync(logFilePath, string.Concat(DateTime.Now.ToString(dateTimeFormat), " >> ", message, Environment.NewLine));
+            File.AppendAllText(logFilePath, string.Concat(DateTime.Now.ToString(dateTimeFormat), " >> ", message, Environment.NewLine));
         }
     }
 }
