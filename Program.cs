@@ -44,8 +44,7 @@ namespace migration_pair
                     break;
 
                 default:
-                    Console.WriteLine("[Error] Config entry \"Task_To_Perform\" is either unspecified or misspecified.");
-                    _ = Console.ReadKey();
+                    Helper.Logger.Write("[Error] Config entry \"Task_To_Perform\" is either unspecified or misspecified.");
                     break;
             }
         }
@@ -126,7 +125,7 @@ namespace migration_pair
                     rowToWrite.Add(valueToWrite);
                 }
 
-                tableData.AppendLine(string.Join(",", rowToWrite));
+                tableData.AppendLine(string.Join(',', rowToWrite));
             }
 
             return tableData;
