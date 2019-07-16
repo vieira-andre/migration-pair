@@ -13,5 +13,12 @@ namespace migration_pair.Models
                 { typeof(DateTimeOffset), (dynamic value) => { return System.Convert.ToInt64(value); } },
                 { typeof(bool), (dynamic value) => { return bool.Parse(value); } }
             };
+
+        internal static dynamic Convert(dynamic fieldValue, Type columnDataType)
+        {
+            return converter.ContainsKey(columnDataType)
+                ? converter[columnDataType].Invoke(fieldValue)
+                : fieldValue;
+        }
     }
 }
