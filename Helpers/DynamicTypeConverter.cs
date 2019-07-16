@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace migration_pair.Helper
+namespace migration_pair.Helpers
 {
     internal static class DynamicTypeConverter
     {

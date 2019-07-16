@@ -2,7 +2,7 @@
 using System.Configuration;
 using System.IO;
 
-namespace migration_pair.Helper
+namespace migration_pair.Helpers
 {
     internal static class Logger
     {
