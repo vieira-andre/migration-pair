@@ -45,7 +45,7 @@ namespace migration_pair
                     break;
 
                 default:
-                    Helpers.Log.Write("[Error] Config entry \"Task_To_Perform\" is either unspecified or misspecified.");
+                    Log.Write("[Error] Config entry \"Task_To_Perform\" is either unspecified or misspecified.");
                     break;
             }
 
@@ -104,6 +104,8 @@ namespace migration_pair
             string cql = $"SELECT * FROM {ctable.Keyspace}.{ctable.Name}";
             var statement = new SimpleStatement(cql);
             RowSet results = sourceSession.Execute(statement);
+
+            Log.Write($"Rows available for retrieval: {results.GetAvailableWithoutFetching()}");
 
             foreach (Row result in results)
             {
@@ -179,6 +181,8 @@ namespace migration_pair
                     tableData.Add(row.ToArray());
                 }
             }
+
+            Log.Write($"Rows retrieved from csv: {tableData.Count}");
 
             return tableData;
         }
