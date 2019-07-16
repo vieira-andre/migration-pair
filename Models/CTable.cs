@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace migration_pair
+namespace migration_pair.Models
 {
     internal class CTable
     {
