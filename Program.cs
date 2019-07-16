@@ -107,7 +107,7 @@ namespace migration_pair
 
                 for (int i = 0; i < result.Length; i++)
                 {
-                    if (results.Columns[i].Type.IsEquivalentTo(typeof(DateTimeOffset)))
+                    if (results.Columns[i].Type.IsAssignableFrom(typeof(DateTimeOffset)))
                         row[i] = new CField(((DateTimeOffset)result[i]).ToUnixTimeMilliseconds(), results.Columns[i].Name, typeof(long));
                     else
                         row[i] = new CField(result[i], results.Columns[i].Name, results.Columns[i].Type);
