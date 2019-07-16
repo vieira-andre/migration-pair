@@ -1,4 +1,5 @@
-﻿using System.Configuration;
+﻿using migration_pair.Helpers;
+using System.Configuration;
 
 namespace migration_pair.Models
 {
@@ -15,7 +16,7 @@ namespace migration_pair.Models
 
         public ConfigurableValues()
         {
-            Helpers.Logger.Write("Assigning configurable values...");
+            Log.Write("Assigning configurable values...");
 
             TaskToPerform = ConfigurationManager.AppSettings["Task_To_Perform"];
             FilePath = ConfigurationManager.AppSettings["File_Path"];

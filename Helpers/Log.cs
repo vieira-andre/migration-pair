@@ -4,7 +4,7 @@ using System.IO;
 
 namespace migration_pair.Helpers
 {
-    internal static class Logger
+    internal static class Log
     {
         private const string dateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffzzz";
         private static readonly string logFilePath = ConfigurationManager.AppSettings["Log_File_Path"];

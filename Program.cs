@@ -27,8 +27,7 @@ namespace migration_pair
         static void Main(string[] args)
         {
             Enum.TryParse(config.TaskToPerform, true, out TaskToPerform procedure);
-
-            Helpers.Logger.Write($"Task to perform: {procedure.ToString()}");
+            Log.Write($"Task to perform: {procedure.ToString()}");
 
             switch (procedure)
             {
@@ -46,16 +45,16 @@ namespace migration_pair
                     break;
 
                 default:
-                    Helpers.Logger.Write("[Error] Config entry \"Task_To_Perform\" is either unspecified or misspecified.");
+                    Helpers.Log.Write("[Error] Config entry \"Task_To_Perform\" is either unspecified or misspecified.");
                     break;
             }
 
-            Helpers.Logger.Write("Ending application...");
+            Log.Write("Ending application...");
         }
 
         private static void BuildSourceClusterAndSession()
         {
-            Helpers.Logger.Write("Building source cluster and connecting session...");
+            Log.Write("Building source cluster and connecting session...");
 
             sourceCluster = Cluster.Builder().AddContactPoints(config.SourceEndPoints).Build();
             sourceSession = sourceCluster.Connect();
@@ -63,7 +62,7 @@ namespace migration_pair
 
         private static void BuildTargetClusterAndSession()
         {
-            Helpers.Logger.Write("Building target cluster and connecting session...");
+            Log.Write("Building target cluster and connecting session...");
 
             targetCluster = Cluster.Builder().AddContactPoints(config.TargetEndPoints).Build();
             targetSession = targetCluster.Connect();
@@ -71,7 +70,7 @@ namespace migration_pair
 
         private static void ExtractionPhase()
         {
-            Helpers.Logger.Write("Starting extraction phase...");
+            Log.Write("Starting extraction phase...");
 
             BuildSourceClusterAndSession();
 
@@ -86,7 +85,7 @@ namespace migration_pair
 
         private static void InsertionPhase()
         {
-            Helpers.Logger.Write("Starting insertion phase...");
+            Log.Write("Starting insertion phase...");
 
             var tableData = ReadFromCsv(config.FilePath);
 
@@ -100,7 +99,7 @@ namespace migration_pair
 
         private static void GetRows(ref CTable ctable)
         {
-            Helpers.Logger.Write("Getting source table's rows...");
+            Log.Write("Getting source table's rows...");
 
             string cql = $"SELECT * FROM {ctable.Keyspace}.{ctable.Name}";
             var statement = new SimpleStatement(cql);
@@ -123,7 +122,7 @@ namespace migration_pair
 
         private static StringBuilder WriteResultsToObject(CTable ctable)
         {
-            Helpers.Logger.Write("Writing extraction results to object...");
+            Log.Write("Writing extraction results to object...");
 
             var tableData = new StringBuilder();
 
@@ -149,7 +148,7 @@ namespace migration_pair
 
         private static void SaveResultsIntoFile(StringBuilder tableData, string filePath)
         {
-            Helpers.Logger.Write("Saving extraction results into file...");
+            Log.Write("Saving extraction results into file...");
 
             _ = Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             File.WriteAllText(filePath, tableData.ToString());
@@ -157,7 +156,7 @@ namespace migration_pair
 
         private static List<string[]> ReadFromCsv(string filePath)
         {
-            Helpers.Logger.Write("Reading data from csv file...");
+            Log.Write("Reading data from csv file...");
 
             var tableData = new List<string[]>();
 
@@ -186,7 +185,7 @@ namespace migration_pair
 
         private static List<CColumn> GetColumnsForTable()
         {
-            Helpers.Logger.Write("Getting the columns of target table...");
+            Log.Write("Getting the columns of target table...");
 
             var columns = new List<CColumn>();
 
@@ -202,7 +201,7 @@ namespace migration_pair
 
         private static void InsertDataIntoTable(ref List<string[]> tableData, ref List<CColumn> columns)
         {
-            Helpers.Logger.Write("Inserting data into target table...");
+            Log.Write("Inserting data into target table...");
 
             string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
             string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
