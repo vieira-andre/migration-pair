@@ -106,7 +106,12 @@ namespace migration_pair
                 CField[] row = new CField[result.Length];
 
                 for (int i = 0; i < result.Length; i++)
-                    row[i] = new CField(result[i], results.Columns[i].Name, results.Columns[i].Type);
+                {
+                    if (results.Columns[i].Type.IsEquivalentTo(typeof(DateTimeOffset)))
+                        row[i] = new CField(((DateTimeOffset)result[i]).ToUnixTimeMilliseconds(), results.Columns[i].Name, typeof(long));
+                    else
+                        row[i] = new CField(result[i], results.Columns[i].Name, results.Columns[i].Type);
+                }
 
                 ctable.Rows.Add(row);
             }
@@ -212,7 +217,7 @@ namespace migration_pair
             if (columnDataType.Equals(typeof(long))) { return Convert.ToInt64(fieldValue); }
             if (columnDataType.Equals(typeof(int))) { return Convert.ToInt32(fieldValue); }
             if (columnDataType.Equals(typeof(short))) { return Convert.ToInt16(fieldValue); }
-            if (columnDataType.Equals(typeof(DateTimeOffset))) { return DateTimeOffset.Parse(fieldValue); }
+            if (columnDataType.Equals(typeof(DateTimeOffset))) { return Convert.ToInt64(fieldValue); }
             if (columnDataType.Equals(typeof(bool))) { return bool.Parse(fieldValue); }
 
             return fieldValue;
