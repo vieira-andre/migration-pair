@@ -193,24 +193,13 @@ namespace migration_pair
                 int i = 0;
                 while (i < row.Length)
                 {
-                    preparedRow.Add(ConvertFieldValueToProperType(row[i], columns[i].DataType));
+                    preparedRow.Add(DynamicTypeConverter.Convert(row[i], columns[i].DataType));
                     i++;
                 }
 
                 BoundStatement bStatement = pStatement.Bind(preparedRow.ToArray<dynamic>());
                 _ = targetSession.Execute(bStatement);
             }
-        }
-
-        private static dynamic ConvertFieldValueToProperType(dynamic fieldValue, Type columnDataType)
-        {
-            if (columnDataType.Equals(typeof(long))) { return Convert.ToInt64(fieldValue); }
-            if (columnDataType.Equals(typeof(int))) { return Convert.ToInt32(fieldValue); }
-            if (columnDataType.Equals(typeof(short))) { return Convert.ToInt16(fieldValue); }
-            if (columnDataType.Equals(typeof(DateTimeOffset))) { return Convert.ToInt64(fieldValue); }
-            if (columnDataType.Equals(typeof(bool))) { return bool.Parse(fieldValue); }
-
-            return fieldValue;
         }
 
         private static void DisposeSourceSessionAndCluster()
