@@ -1,8 +1,8 @@
 ﻿using Cassandra;
 using CsvHelper;
+using migration_pair.Models;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,30 +11,21 @@ namespace migration_pair
 {
     class Program
     {
-        #region Configs
-        private static readonly string taskToPerform = ConfigurationManager.AppSettings["Task_To_Perform"];
-        private static readonly string filePath = ConfigurationManager.AppSettings["File_Path"];
+        private static readonly ConfigurableValues config = new ConfigurableValues();
 
-        #region Source configs
-        private static readonly string[] sourceEndpoints = ConfigurationManager.AppSettings["Source_Endpoints"].Split(',');
-        private static readonly string sourceKeyspace = ConfigurationManager.AppSettings["Source_Keyspace"];
-        private static readonly string sourceTableName = ConfigurationManager.AppSettings["Source_Table_Name"];
+        #region Source cluster & session
         private static Cluster sourceCluster;
         private static ISession sourceSession;
         #endregion
 
-        #region Target configs
-        private static readonly string[] targetEndpoints = ConfigurationManager.AppSettings["Target_Endpoints"].Split(',');
-        private static readonly string targetKeyspace = ConfigurationManager.AppSettings["Target_Keyspace"];
-        private static readonly string targetTableName = ConfigurationManager.AppSettings["Target_Table_Name"];
+        #region Target cluster & session
         private static Cluster targetCluster;
         private static ISession targetSession;
-        #endregion
         #endregion
 
         static void Main(string[] args)
         {
-            Enum.TryParse(taskToPerform, true, out TaskToPerform procedure);
+            Enum.TryParse(config.TaskToPerform, true, out TaskToPerform procedure);
 
             switch (procedure)
             {
@@ -52,7 +43,7 @@ namespace migration_pair
                     break;
 
                 default:
-                    Console.WriteLine("[Error] Config entry \"Task_To_Perfom\" either unspecified or misspecified.");
+                    Console.WriteLine("[Error] Config entry \"Task_To_Perfom\" is either unspecified or misspecified.");
                     _ = Console.ReadKey();
                     break;
             }
@@ -60,13 +51,13 @@ namespace migration_pair
 
         private static void BuildSourceClusterAndSession()
         {
-            sourceCluster = Cluster.Builder().AddContactPoints(sourceEndpoints).Build();
+            sourceCluster = Cluster.Builder().AddContactPoints(config.SourceEndPoints).Build();
             sourceSession = sourceCluster.Connect();
         }
 
         private static void BuildTargetClusterAndSession()
         {
-            targetCluster = Cluster.Builder().AddContactPoints(targetEndpoints).Build();
+            targetCluster = Cluster.Builder().AddContactPoints(config.TargetEndPoints).Build();
             targetSession = targetCluster.Connect();
         }
 
@@ -74,18 +65,18 @@ namespace migration_pair
         {
             BuildSourceClusterAndSession();
 
-            var ctable = new CTable(sourceTableName, sourceKeyspace);
+            var ctable = new CTable(config.SourceTableName, config.SourceKeyspace);
             GetRows(ref ctable);
 
             DisposeSourceSessionAndCluster();
 
             var tableData = WriteResultsToObject(ctable);
-            SaveResultsIntoFile(tableData, filePath);
+            SaveResultsIntoFile(tableData, config.FilePath);
         }
 
         private static void InsertionPhase()
         {
-            var tableData = ReadFromCsv(filePath);
+            var tableData = ReadFromCsv(config.FilePath);
 
             BuildTargetClusterAndSession();
 
@@ -177,7 +168,7 @@ namespace migration_pair
         {
             var columns = new List<CColumn>();
 
-            string cql = $"SELECT * FROM {targetKeyspace}.{targetTableName} LIMIT 1";
+            string cql = $"SELECT * FROM {config.TargetKeyspace}.{config.TargetTableName} LIMIT 1";
             var statement = new SimpleStatement(cql);
             RowSet results = targetSession.Execute(statement);
 
@@ -192,7 +183,7 @@ namespace migration_pair
             string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
             string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
 
-            string cql = $"INSERT INTO {targetKeyspace}.{targetTableName} ({columnsAsString}) VALUES ({valuesPlaceholders})";
+            string cql = $"INSERT INTO {config.TargetKeyspace}.{config.TargetTableName} ({columnsAsString}) VALUES ({valuesPlaceholders})";
             PreparedStatement pStatement = targetSession.Prepare(cql);
 
             foreach (string[] row in tableData)
