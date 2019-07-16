@@ -189,16 +189,16 @@ namespace migration_pair
 
             foreach (string[] row in tableData)
             {
-                var preparedRow = new List<dynamic>(row.Length);
+                dynamic[] preparedRow = new dynamic[row.Length];
 
                 int i = 0;
                 while (i < row.Length)
                 {
-                    preparedRow.Add(DynamicTypeConverter.Convert(row[i], columns[i].DataType));
+                    preparedRow[i] = DynamicTypeConverter.Convert(row[i], columns[i].DataType);
                     i++;
                 }
 
-                BoundStatement bStatement = pStatement.Bind(preparedRow.ToArray<dynamic>());
+                BoundStatement bStatement = pStatement.Bind(preparedRow);
                 _ = targetSession.Execute(bStatement);
             }
         }
