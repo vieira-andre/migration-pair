@@ -15,6 +15,8 @@ namespace migration_pair.Models
 
         public ConfigurableValues()
         {
+            Helper.Logger.Write("Assigning configurable values...");
+
             TaskToPerform = ConfigurationManager.AppSettings["Task_To_Perform"];
             FilePath = ConfigurationManager.AppSettings["File_Path"];
             SourceEndPoints = ConfigurationManager.AppSettings["Source_Endpoints"].Split(',');

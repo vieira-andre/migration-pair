@@ -28,6 +28,8 @@ namespace migration_pair
         {
             Enum.TryParse(config.TaskToPerform, true, out TaskToPerform procedure);
 
+            Helper.Logger.Write($"Task to perform: {procedure.ToString()}");
+
             switch (procedure)
             {
                 case TaskToPerform.Extract:
@@ -47,22 +49,30 @@ namespace migration_pair
                     Helper.Logger.Write("[Error] Config entry \"Task_To_Perform\" is either unspecified or misspecified.");
                     break;
             }
+
+            Helper.Logger.Write("Ending application...");
         }
 
         private static void BuildSourceClusterAndSession()
         {
+            Helper.Logger.Write("Building source cluster and connecting session...");
+
             sourceCluster = Cluster.Builder().AddContactPoints(config.SourceEndPoints).Build();
             sourceSession = sourceCluster.Connect();
         }
 
         private static void BuildTargetClusterAndSession()
         {
+            Helper.Logger.Write("Building target cluster and connecting session...");
+
             targetCluster = Cluster.Builder().AddContactPoints(config.TargetEndPoints).Build();
             targetSession = targetCluster.Connect();
         }
 
         private static void ExtractionPhase()
         {
+            Helper.Logger.Write("Starting extraction phase...");
+
             BuildSourceClusterAndSession();
 
             var ctable = new CTable(config.SourceTableName, config.SourceKeyspace);
@@ -76,6 +86,8 @@ namespace migration_pair
 
         private static void InsertionPhase()
         {
+            Helper.Logger.Write("Starting insertion phase...");
+
             var tableData = ReadFromCsv(config.FilePath);
 
             BuildTargetClusterAndSession();
@@ -88,6 +100,8 @@ namespace migration_pair
 
         private static void GetRows(ref CTable ctable)
         {
+            Helper.Logger.Write("Getting source table's rows...");
+
             string cql = $"SELECT * FROM {ctable.Keyspace}.{ctable.Name}";
             var statement = new SimpleStatement(cql);
             RowSet results = sourceSession.Execute(statement);
@@ -109,6 +123,8 @@ namespace migration_pair
 
         private static StringBuilder WriteResultsToObject(CTable ctable)
         {
+            Helper.Logger.Write("Writing extraction results to object...");
+
             var tableData = new StringBuilder();
 
             foreach (CField[] row in ctable.Rows)
@@ -133,12 +149,16 @@ namespace migration_pair
 
         private static void SaveResultsIntoFile(StringBuilder tableData, string filePath)
         {
+            Helper.Logger.Write("Saving extraction results into file...");
+
             _ = Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             File.WriteAllText(filePath, tableData.ToString());
         }
 
         private static List<string[]> ReadFromCsv(string filePath)
         {
+            Helper.Logger.Write("Reading data from csv file...");
+
             var tableData = new List<string[]>();
 
             using (TextReader reader = new StreamReader(filePath))
@@ -166,6 +186,8 @@ namespace migration_pair
 
         private static List<CColumn> GetColumnsForTable()
         {
+            Helper.Logger.Write("Getting the columns of target table...");
+
             var columns = new List<CColumn>();
 
             string cql = $"SELECT * FROM {config.TargetKeyspace}.{config.TargetTableName} LIMIT 1";
@@ -180,6 +202,8 @@ namespace migration_pair
 
         private static void InsertDataIntoTable(ref List<string[]> tableData, ref List<CColumn> columns)
         {
+            Helper.Logger.Write("Inserting data into target table...");
+
             string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
             string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
 
