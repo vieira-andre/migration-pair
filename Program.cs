@@ -27,7 +27,7 @@ namespace migration_pair
         static void Main(string[] args)
         {
             Enum.TryParse(config.TaskToPerform, true, out TaskToPerform procedure);
-            Log.Write($"Task to perform: {procedure.ToString()}");
+            Log.Write($"Task to perform: {procedure}");
 
             switch (procedure)
             {
