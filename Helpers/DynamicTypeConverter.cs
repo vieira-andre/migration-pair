@@ -7,10 +7,10 @@ namespace migration_pair.Helpers
     {
         private static readonly Dictionary<Type, Func<dynamic, dynamic>> converter = new Dictionary<Type, Func<dynamic, dynamic>>
             {
-                { typeof(long), (dynamic value) => { return System.Convert.ToInt64(value); } },
-                { typeof(int), (dynamic value) => { return System.Convert.ToInt32(value); } },
-                { typeof(short), (dynamic value) => { return System.Convert.ToInt16(value); } },
-                { typeof(DateTimeOffset), (dynamic value) => { return System.Convert.ToInt64(value); } },
+                { typeof(long), (dynamic value) => { return System.Convert.ToInt64(string.IsNullOrEmpty(value) ? null : value); } },
+                { typeof(int), (dynamic value) => { return System.Convert.ToInt32(string.IsNullOrEmpty(value) ? null : value); } },
+                { typeof(short), (dynamic value) => { return System.Convert.ToInt16(string.IsNullOrEmpty(value) ? null : value); } },
+                { typeof(DateTimeOffset), (dynamic value) => { return System.Convert.ToInt64(string.IsNullOrEmpty(value) ? null : value); } },
                 { typeof(bool), (dynamic value) => { return bool.Parse(value); } }
             };
 
