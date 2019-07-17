@@ -14,14 +14,9 @@ namespace migration_pair
     {
         private static readonly ConfigurableValues config = new ConfigurableValues();
 
-        #region Source cluster & session
-        private static Cluster sourceCluster;
-        private static ISession sourceSession;
-        #endregion
-
-        #region Target cluster & session
-        private static Cluster targetCluster;
-        private static ISession targetSession;
+        #region Clusters & sessions
+        private static Cluster sourceCluster, targetCluster;
+        private static ISession sourceSession, targetSession;
         #endregion
 
         static void Main(string[] args)
