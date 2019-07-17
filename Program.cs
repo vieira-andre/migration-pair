@@ -100,8 +100,6 @@ namespace migration_pair
             var statement = new SimpleStatement(cql);
             RowSet results = sourceSession.Execute(statement);
 
-            Log.Write($"Rows available for retrieval: {results.GetAvailableWithoutFetching()}");
-
             foreach (Row result in results)
             {
                 CField[] row = new CField[result.Length];
@@ -115,6 +113,8 @@ namespace migration_pair
 
                 ctable.Rows.Add(row);
             }
+
+            Log.Write($"Rows retrieved: {ctable.Rows.Count}");
         }
 
         private static StringBuilder WriteResultsToObject(CTable ctable)
