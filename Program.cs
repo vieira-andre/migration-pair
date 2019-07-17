@@ -82,7 +82,7 @@ namespace migration_pair
         {
             Log.Write("Starting insertion phase...");
 
-            var tableData = ReadFromCsv(config.FilePath);
+            var tableData = ReadFromFile(config.FilePath);
 
             BuildTargetClusterAndSession();
 
@@ -151,7 +151,7 @@ namespace migration_pair
             File.WriteAllText(filePath, tableData.ToString());
         }
 
-        private static List<string[]> ReadFromCsv(string filePath)
+        private static List<string[]> ReadFromFile(string filePath)
         {
             Log.Write("Reading data from csv file...");
 
