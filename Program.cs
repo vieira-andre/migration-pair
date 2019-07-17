@@ -82,7 +82,7 @@ namespace migration_pair
         {
             Log.Write("Starting insertion phase...");
 
-            var tableData = ReadFromFile(config.FilePath);
+            List<string[]> tableData = ReadFromFile(config.FilePath);
 
             BuildTargetClusterAndSession();
 
