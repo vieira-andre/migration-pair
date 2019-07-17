@@ -69,7 +69,7 @@ namespace migration_pair
 
             BuildSourceClusterAndSession();
 
-            var ctable = new CTable(config.SourceTableName, config.SourceKeyspace);
+            var ctable = new CTable(config.SourceTable, config.SourceKeyspace);
             GetRows(ref ctable);
 
             DisposeSourceSessionAndCluster();
@@ -188,7 +188,7 @@ namespace migration_pair
 
             var columns = new List<CColumn>();
 
-            string cql = $"SELECT * FROM {config.TargetKeyspace}.{config.TargetTableName} LIMIT 1";
+            string cql = $"SELECT * FROM {config.TargetKeyspace}.{config.TargetTable} LIMIT 1";
             var statement = new SimpleStatement(cql);
             RowSet results = targetSession.Execute(statement);
 
@@ -205,7 +205,7 @@ namespace migration_pair
             string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
             string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
 
-            string cql = $"INSERT INTO {config.TargetKeyspace}.{config.TargetTableName} ({columnsAsString}) VALUES ({valuesPlaceholders})";
+            string cql = $"INSERT INTO {config.TargetKeyspace}.{config.TargetTable} ({columnsAsString}) VALUES ({valuesPlaceholders})";
             PreparedStatement pStatement = targetSession.Prepare(cql);
 
             foreach (string[] row in tableData)

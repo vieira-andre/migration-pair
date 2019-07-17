@@ -9,10 +9,10 @@ namespace migration_pair.Models
         public string FilePath { get; private set; }
         public string[] SourceEndPoints { get; private set; }
         public string SourceKeyspace { get; private set; }
-        public string SourceTableName { get; private set; }
+        public string SourceTable { get; private set; }
         public string[] TargetEndPoints { get; private set; }
         public string TargetKeyspace { get; private set; }
-        public string TargetTableName { get; private set; }
+        public string TargetTable { get; private set; }
 
         public ConfigurableValues()
         {
@@ -22,10 +22,10 @@ namespace migration_pair.Models
             FilePath = ConfigurationManager.AppSettings["File_Path"];
             SourceEndPoints = ConfigurationManager.AppSettings["Source_Endpoints"].Split(',');
             SourceKeyspace = ConfigurationManager.AppSettings["Source_Keyspace"];
-            SourceTableName = ConfigurationManager.AppSettings["Source_Table_Name"];
+            SourceTable = ConfigurationManager.AppSettings["Source_Table"];
             TargetEndPoints = ConfigurationManager.AppSettings["Target_Endpoints"].Split(',');
             TargetKeyspace = ConfigurationManager.AppSettings["Target_Keyspace"];
-            TargetTableName = ConfigurationManager.AppSettings["Target_Table_Name"];
+            TargetTable = ConfigurationManager.AppSettings["Target_Table"];
         }
     }
 }
