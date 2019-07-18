@@ -225,9 +225,40 @@ namespace migration_pair
             }
         }
 
-        private static void CheckCompliance()
+        private static bool CheckCompliance()
         {
+            IList<CColumn> sourceColumns = GetColumnsInfo(config.SourceKeyspace, config.SourceTable);
+            IList<CColumn> targetColumns = GetColumnsInfo(config.TargetKeyspace, config.TargetTable);
 
+            if (sourceColumns.Count != targetColumns.Count)
+            {
+                Log.Write("[Error] Tables from source and target have divergent number of columns.");
+                return false;
+            }
+
+            var matches = new List<bool>();
+
+            foreach (CColumn sourceColumn in sourceColumns)
+            {
+                foreach (CColumn targetColumn in targetColumns)
+                {
+                    if (sourceColumn.Name.Equals(targetColumn.Name) 
+                        && sourceColumn.DataType.Equals(targetColumn.DataType))
+                    {
+                        matches.Add(true);
+                    }
+                }
+            }
+
+            if (matches.Count == sourceColumns.Count)
+            {
+                Log.Write("Tables are compliant with each other.");
+                return true;
+            }
+            else
+                Log.Write($"Tables are not compliant with each other: {sourceColumns.Count - matches.Count} mismatch(es) among {sourceColumns.Count} columns.");
+
+            return false;
         }
 
         private static void DisposeSourceSessionAndCluster()
