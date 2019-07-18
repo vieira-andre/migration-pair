@@ -83,11 +83,11 @@ namespace migration_pair
         {
             Log.Write("Starting insertion phase...");
 
-            List<string[]> tableData = ReadFromFile(config.FilePath);
+            IList<string[]> tableData = ReadFromFile(config.FilePath);
 
             BuildTargetClusterAndSession();
 
-            List<CColumn> columns = GetColumnsInfo(config.TargetKeyspace, config.TargetTable);
+            IList<CColumn> columns = GetColumnsInfo(config.TargetKeyspace, config.TargetTable);
             InsertDataIntoTable(ref tableData, ref columns);
 
             DisposeTargetSessionAndCluster();
@@ -152,7 +152,7 @@ namespace migration_pair
             File.WriteAllText(filePath, tableData.ToString());
         }
 
-        private static List<string[]> ReadFromFile(string filePath)
+        private static IList<string[]> ReadFromFile(string filePath)
         {
             Log.Write("Reading data from csv file...");
 
@@ -183,7 +183,7 @@ namespace migration_pair
             return tableData;
         }
 
-        private static List<CColumn> GetColumnsInfo(string keyspace, string table)
+        private static IList<CColumn> GetColumnsInfo(string keyspace, string table)
         {
             Log.Write($"Getting columns info for table: {table} (keyspace: {keyspace})");
 
@@ -199,7 +199,7 @@ namespace migration_pair
             return columns;
         }
 
-        private static void InsertDataIntoTable(ref List<string[]> tableData, ref List<CColumn> columns)
+        private static void InsertDataIntoTable(ref IList<string[]> tableData, ref IList<CColumn> columns)
         {
             Log.Write("Inserting data into target table...");
 
