@@ -87,7 +87,7 @@ namespace migration_pair
 
             BuildTargetClusterAndSession();
 
-            List<CColumn> columns = GetColumnsForTable(config.TargetKeyspace, config.TargetTable);
+            List<CColumn> columns = GetColumnsInfo(config.TargetKeyspace, config.TargetTable);
             InsertDataIntoTable(ref tableData, ref columns);
 
             DisposeTargetSessionAndCluster();
@@ -183,7 +183,7 @@ namespace migration_pair
             return tableData;
         }
 
-        private static List<CColumn> GetColumnsForTable(string keyspace, string table)
+        private static List<CColumn> GetColumnsInfo(string keyspace, string table)
         {
             Log.Write("Getting the columns of target table...");
 
@@ -227,7 +227,7 @@ namespace migration_pair
 
         private static void CheckCompliance()
         {
-            
+
         }
 
         private static void DisposeSourceSessionAndCluster()
