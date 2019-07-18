@@ -185,7 +185,7 @@ namespace migration_pair
 
         private static List<CColumn> GetColumnsInfo(string keyspace, string table)
         {
-            Log.Write("Getting the columns of target table...");
+            Log.Write($"Getting columns info for table: {table} (keyspace: {keyspace})");
 
             var columns = new List<CColumn>();
 
