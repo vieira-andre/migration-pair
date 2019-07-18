@@ -22,7 +22,7 @@ namespace migration_pair
         static void Main(string[] args)
         {
             Enum.TryParse(config.TaskToPerform, true, out TaskToPerform procedure);
-            Log.Write($"Task to perform: {procedure}");
+            Log.Write(procedure, config);
 
             switch (procedure)
             {
