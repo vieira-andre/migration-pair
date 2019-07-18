@@ -86,7 +86,7 @@ namespace migration_pair
 
             BuildTargetClusterAndSession();
 
-            List<CColumn> columns = GetColumnsForTable();
+            List<CColumn> columns = GetColumnsForTable(config.TargetKeyspace, config.TargetTable);
             InsertDataIntoTable(ref tableData, ref columns);
 
             DisposeTargetSessionAndCluster();
@@ -182,13 +182,13 @@ namespace migration_pair
             return tableData;
         }
 
-        private static List<CColumn> GetColumnsForTable()
+        private static List<CColumn> GetColumnsForTable(string keyspace, string table)
         {
             Log.Write("Getting the columns of target table...");
 
             var columns = new List<CColumn>();
 
-            string cql = $"SELECT * FROM {config.TargetKeyspace}.{config.TargetTable} LIMIT 1";
+            string cql = $"SELECT * FROM {keyspace}.{table} LIMIT 1";
             var statement = new SimpleStatement(cql);
             RowSet results = targetSession.Execute(statement);
 
