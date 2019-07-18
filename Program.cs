@@ -76,7 +76,7 @@ namespace migration_pair
             DisposeSourceSessionAndCluster();
 
             var tableData = WriteResultsToObject(ctable);
-            SaveResultsIntoFile(tableData, config.FilePath);
+            SaveResultsIntoFile(ref tableData, config.FilePath);
         }
 
         private static void InsertionPhase()
@@ -144,7 +144,7 @@ namespace migration_pair
             return tableData;
         }
 
-        private static void SaveResultsIntoFile(StringBuilder tableData, string filePath)
+        private static void SaveResultsIntoFile(ref StringBuilder tableData, string filePath)
         {
             Log.Write("Saving extraction results into file...");
 
