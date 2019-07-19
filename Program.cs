@@ -4,6 +4,7 @@ using migration_pair.Helpers;
 using migration_pair.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -214,6 +215,8 @@ namespace migration_pair
             string cql = $"INSERT INTO {config.TargetKeyspace}.{config.TargetTable} ({columnsAsString}) VALUES ({valuesPlaceholders})";
             PreparedStatement pStatement = targetSession.Prepare(cql);
 
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
 
             var tasks = new List<Task<RowSet>>();
 
@@ -233,6 +236,9 @@ namespace migration_pair
             }
 
             await Task.WhenAll(tasks);
+
+            stopwatch.Stop();
+            Log.Write($"Elapsed insertion time: {stopwatch.ElapsedMilliseconds} ms");
         }
 
         private static void ExtractAndInsert()
