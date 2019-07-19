@@ -15,7 +15,7 @@ namespace migration_pair
         private static readonly ConfigurableValues config = new ConfigurableValues();
 
         #region Clusters & sessions
-        private static Cluster sourceCluster, targetCluster;
+        private static ICluster sourceCluster, targetCluster;
         private static ISession sourceSession, targetSession;
         #endregion
 
@@ -234,7 +234,7 @@ namespace migration_pair
             BuildSourceClusterAndSession();
             BuildTargetClusterAndSession();
 
-            if (CheckCompliance())
+            if (IsThereCompliance())
             {
                 ExtractionPhase();
                 InsertionPhase();
@@ -244,7 +244,7 @@ namespace migration_pair
             DisposeTargetSessionAndCluster();
         }
 
-        private static bool CheckCompliance()
+        private static bool IsThereCompliance()
         {
             IList<CColumn> sourceColumns = GetColumnsInfo(config.SourceKeyspace, config.SourceTable);
             IList<CColumn> targetColumns = GetColumnsInfo(config.TargetKeyspace, config.TargetTable);
