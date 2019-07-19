@@ -74,29 +74,53 @@ namespace migration_pair
         {
             Log.Write("Starting extraction phase...");
 
-            BuildSourceClusterAndSession();
+            try
+            {
+                BuildSourceClusterAndSession();
 
-            var ctable = new CTable(config.SourceTable, config.SourceKeyspace);
-            GetRows(ref ctable);
+                var ctable = new CTable(config.SourceTable, config.SourceKeyspace);
+                GetRows(ref ctable);
 
-            DisposeSourceSessionAndCluster();
+                DisposeSourceSessionAndCluster();
 
-            var tableData = WriteResultsToObject(ctable);
-            SaveResultsIntoFile(ref tableData, config.FilePath);
+                var tableData = WriteResultsToObject(ctable);
+                SaveResultsIntoFile(ref tableData, config.FilePath);
+            }
+            catch (AggregateException aggEx)
+            {
+                foreach (Exception ex in aggEx.Flatten().InnerExceptions)
+                    Log.Write($"[Exception] {ex.ToString()}");
+            }
+            catch (Exception ex)
+            {
+                Log.Write($"[Exception] {ex.ToString()}");
+            }
         }
 
         private static void InsertionPhase()
         {
             Log.Write("Starting insertion phase...");
 
-            IList<string[]> tableData = ReadFromFile(config.FilePath);
+            try
+            {
+                IList<string[]> tableData = ReadFromFile(config.FilePath);
 
-            BuildTargetClusterAndSession();
+                BuildTargetClusterAndSession();
 
-            IList<CColumn> columns = GetColumnsInfo(config.TargetKeyspace, config.TargetTable);
-            InsertDataIntoTableAsync(tableData, columns).Wait();
+                IList<CColumn> columns = GetColumnsInfo(config.TargetKeyspace, config.TargetTable);
+                InsertDataIntoTableAsync(tableData, columns).Wait();
 
-            DisposeTargetSessionAndCluster();
+                DisposeTargetSessionAndCluster();
+            }
+            catch (AggregateException aggEx)
+            {
+                foreach (Exception ex in aggEx.Flatten().InnerExceptions)
+                    Log.Write($"[Exception] {ex.ToString()}");
+            }
+            catch (Exception ex)
+            {
+                Log.Write($"[Exception] {ex.ToString()}");
+            }
         }
 
         private static void GetRows(ref CTable ctable)
@@ -273,7 +297,7 @@ namespace migration_pair
             {
                 foreach (CColumn targetColumn in targetColumns)
                 {
-                    if (sourceColumn.Name.Equals(targetColumn.Name) 
+                    if (sourceColumn.Name.Equals(targetColumn.Name)
                         && sourceColumn.DataType.Equals(targetColumn.DataType))
                     {
                         matches.Add(true);
