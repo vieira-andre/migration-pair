@@ -48,18 +48,24 @@ namespace migration_pair
 
         private static void BuildSourceClusterAndSession()
         {
-            Log.Write("Building source cluster and connecting session...");
+            if (sourceSession == null)
+            {
+                Log.Write("Building source cluster and connecting session...");
 
-            sourceCluster = Cluster.Builder().AddContactPoints(config.SourceEndPoints).Build();
-            sourceSession = sourceCluster.Connect();
+                sourceCluster = Cluster.Builder().AddContactPoints(config.SourceEndPoints).Build();
+                sourceSession = sourceCluster.Connect();
+            }
         }
 
         private static void BuildTargetClusterAndSession()
         {
-            Log.Write("Building target cluster and connecting session...");
+            if (targetSession == null)
+            {
+                Log.Write("Building target cluster and connecting session...");
 
-            targetCluster = Cluster.Builder().AddContactPoints(config.TargetEndPoints).Build();
-            targetSession = targetCluster.Connect();
+                targetCluster = Cluster.Builder().AddContactPoints(config.TargetEndPoints).Build();
+                targetSession = targetCluster.Connect();
+            }
         }
 
         private static void ExtractionPhase()
@@ -276,14 +282,20 @@ namespace migration_pair
 
         private static void DisposeSourceSessionAndCluster()
         {
-            sourceSession.Dispose();
-            sourceCluster.Dispose();
+            if (sourceSession != null && !sourceSession.IsDisposed)
+            {
+                sourceSession.Dispose();
+                sourceCluster.Dispose();
+            }
         }
 
         private static void DisposeTargetSessionAndCluster()
         {
-            targetSession.Dispose();
-            targetCluster.Dispose();
+            if (targetSession != null && !targetSession.IsDisposed)
+            {
+                targetSession.Dispose();
+                targetCluster.Dispose();
+            }
         }
     }
 }
