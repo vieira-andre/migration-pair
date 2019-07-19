@@ -246,7 +246,7 @@ namespace migration_pair
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var tasks = new List<Task<RowSet>>();
+            var tasks = new List<Task>();
 
             foreach (string[] row in tableData)
             {
@@ -263,7 +263,7 @@ namespace migration_pair
                 tasks.Add(targetSession.ExecuteAsync(bStatement));
             }
 
-            _ = await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks);
 
             stopwatch.Stop();
             Log.Write($"Elapsed insertion time: {stopwatch.ElapsedMilliseconds} ms");
