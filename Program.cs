@@ -35,9 +35,7 @@ namespace migration_pair
                     break;
 
                 case TaskToPerform.ExtractAndInsert:
-                    CheckCompliance();
-                    ExtractionPhase();
-                    InsertionPhase();
+                    ExtractAndInsert();
                     break;
 
                 default:
@@ -223,6 +221,21 @@ namespace migration_pair
                 BoundStatement bStatement = pStatement.Bind(preparedRow);
                 _ = targetSession.Execute(bStatement);
             }
+        }
+
+        private static void ExtractAndInsert()
+        {
+            BuildSourceClusterAndSession();
+            BuildTargetClusterAndSession();
+
+            if (CheckCompliance())
+            {
+                ExtractionPhase();
+                InsertionPhase();
+            }
+
+            DisposeSourceSessionAndCluster();
+            DisposeTargetSessionAndCluster();
         }
 
         private static bool CheckCompliance()
