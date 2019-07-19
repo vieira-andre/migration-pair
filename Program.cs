@@ -81,8 +81,6 @@ namespace migration_pair
                 var ctable = new CTable(config.SourceTable, config.SourceKeyspace);
                 GetRows(ref ctable);
 
-                DisposeSourceSessionAndCluster();
-
                 var tableData = WriteResultsToObject(ctable);
                 SaveResultsIntoFile(ref tableData, config.FilePath);
             }
@@ -94,6 +92,10 @@ namespace migration_pair
             catch (Exception ex)
             {
                 Log.Write($"[Exception] {ex.ToString()}");
+            }
+            finally
+            {
+                DisposeSourceSessionAndCluster();
             }
         }
 
@@ -109,8 +111,6 @@ namespace migration_pair
 
                 IList<CColumn> columns = GetColumnsInfo(config.TargetKeyspace, config.TargetTable);
                 InsertDataIntoTableAsync(tableData, columns).Wait();
-
-                DisposeTargetSessionAndCluster();
             }
             catch (AggregateException aggEx)
             {
@@ -120,6 +120,10 @@ namespace migration_pair
             catch (Exception ex)
             {
                 Log.Write($"[Exception] {ex.ToString()}");
+            }
+            finally
+            {
+                DisposeTargetSessionAndCluster();
             }
         }
 
