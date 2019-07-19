@@ -235,7 +235,7 @@ namespace migration_pair
                 tasks.Add(targetSession.ExecuteAsync(bStatement));
             }
 
-            await Task.WhenAll(tasks);
+            _ = await Task.WhenAll(tasks);
 
             stopwatch.Stop();
             Log.Write($"Elapsed insertion time: {stopwatch.ElapsedMilliseconds} ms");
