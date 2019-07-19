@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace migration_pair
 {
@@ -92,7 +93,7 @@ namespace migration_pair
             BuildTargetClusterAndSession();
 
             IList<CColumn> columns = GetColumnsInfo(config.TargetKeyspace, config.TargetTable);
-            InsertDataIntoTable(ref tableData, ref columns);
+            InsertDataIntoTableAsync(tableData, columns).Wait();
 
             DisposeTargetSessionAndCluster();
         }
@@ -203,7 +204,7 @@ namespace migration_pair
             return columns;
         }
 
-        private static void InsertDataIntoTable(ref IList<string[]> tableData, ref IList<CColumn> columns)
+        private static async Task InsertDataIntoTableAsync(IList<string[]> tableData, IList<CColumn> columns)
         {
             Log.Write("Inserting data into target table...");
 
@@ -212,6 +213,9 @@ namespace migration_pair
 
             string cql = $"INSERT INTO {config.TargetKeyspace}.{config.TargetTable} ({columnsAsString}) VALUES ({valuesPlaceholders})";
             PreparedStatement pStatement = targetSession.Prepare(cql);
+
+
+            var tasks = new List<Task<RowSet>>();
 
             foreach (string[] row in tableData)
             {
@@ -225,8 +229,10 @@ namespace migration_pair
                 }
 
                 BoundStatement bStatement = pStatement.Bind(preparedRow);
-                _ = targetSession.Execute(bStatement);
+                tasks.Add(targetSession.ExecuteAsync(bStatement));
             }
+
+            await Task.WhenAll(tasks);
         }
 
         private static void ExtractAndInsert()
