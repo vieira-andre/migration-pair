@@ -158,7 +158,7 @@ namespace migration_pair
 
         private static IList<string[]> ReadFromFile(string filePath)
         {
-            Log.Write("Reading data from csv file...");
+            Log.Write("Reading data from file...");
 
             var tableData = new List<string[]>();
 
@@ -182,7 +182,7 @@ namespace migration_pair
                 }
             }
 
-            Log.Write($"Rows retrieved from csv: {tableData.Count}");
+            Log.Write($"Rows retrieved: {tableData.Count}");
 
             return tableData;
         }
