@@ -192,6 +192,9 @@ namespace migration_pair
         {
             Log.Write("Reading data from file...");
 
+            if (!File.Exists(filePath))
+                throw new FileNotFoundException("The file either does not exist or there is a lack of permissions to read it. Check the path provided.");
+
             var tableData = new List<string[]>();
 
             using (TextReader reader = new StreamReader(filePath))
