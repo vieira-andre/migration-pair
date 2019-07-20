@@ -267,7 +267,7 @@ namespace migration_pair
                 if (IsRequestsLimitReached()) Thread.Sleep(100);
             }
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll(tasks).ConfigureAwait(false);
 
             stopwatch.Stop();
             Log.Write($"Elapsed insertion time: {stopwatch.ElapsedMilliseconds} ms");
