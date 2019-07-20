@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace migration_pair
@@ -262,12 +263,27 @@ namespace migration_pair
 
                 BoundStatement bStatement = pStatement.Bind(preparedRow);
                 tasks.Enqueue(targetSession.ExecuteAsync(bStatement));
+
+                if (IsRequestsLimitReached()) Thread.Sleep(100);
             }
 
             await Task.WhenAll(tasks);
 
             stopwatch.Stop();
             Log.Write($"Elapsed insertion time: {stopwatch.ElapsedMilliseconds} ms");
+        }
+
+        private static bool IsRequestsLimitReached()
+        {
+            ISessionState state = targetSession.GetState();
+
+            foreach (var host in state.GetConnectedHosts())
+            {
+                if (state.GetInFlightQueries(host) >= targetSession.Cluster.Configuration.PoolingOptions.GetMaxRequestsPerConnection())
+                    return true;
+            }
+
+            return false;
         }
 
         private static void ExtractAndInsert()
