@@ -3,6 +3,7 @@ using CsvHelper;
 using migration_pair.Helpers;
 using migration_pair.Models;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -246,7 +247,7 @@ namespace migration_pair
             var stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            var tasks = new List<Task>();
+            var tasks = new ConcurrentQueue<Task>();
 
             foreach (string[] row in tableData)
             {
@@ -260,7 +261,7 @@ namespace migration_pair
                 }
 
                 BoundStatement bStatement = pStatement.Bind(preparedRow);
-                tasks.Add(targetSession.ExecuteAsync(bStatement));
+                tasks.Enqueue(targetSession.ExecuteAsync(bStatement));
             }
 
             await Task.WhenAll(tasks);
