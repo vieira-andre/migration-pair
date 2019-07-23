@@ -264,7 +264,7 @@ namespace migration_pair
                     i++;
                 }
 
-                if (IsRequestsLimitReached()) Thread.Sleep(200);
+                if (IsRequestsLimitReached()) await Task.Delay(200);
 
                 BoundStatement bStatement = pStatement.Bind(preparedRow);
                 tasks.Enqueue(targetSession.ExecuteAsync(bStatement));
