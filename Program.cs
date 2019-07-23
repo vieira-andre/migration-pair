@@ -264,10 +264,10 @@ namespace migration_pair
                     i++;
                 }
 
+                if (IsRequestsLimitReached()) Thread.Sleep(200);
+
                 BoundStatement bStatement = pStatement.Bind(preparedRow);
                 tasks.Enqueue(targetSession.ExecuteAsync(bStatement));
-
-                if (IsRequestsLimitReached()) Thread.Sleep(200);
             }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
