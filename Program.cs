@@ -131,7 +131,7 @@ namespace migration_pair
 
         private static void GetRows(ref CTable ctable)
         {
-            Log.Write("Getting source table's rows...");
+            Log.Write("Getting rows from source table...");
 
             string cql = $"SELECT * FROM {ctable.Keyspace}.{ctable.Name}";
             var statement = new SimpleStatement(cql);
@@ -267,7 +267,7 @@ namespace migration_pair
                 BoundStatement bStatement = pStatement.Bind(preparedRow);
                 tasks.Enqueue(targetSession.ExecuteAsync(bStatement));
 
-                if (IsRequestsLimitReached()) Thread.Sleep(100);
+                if (IsRequestsLimitReached()) Thread.Sleep(200);
             }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
