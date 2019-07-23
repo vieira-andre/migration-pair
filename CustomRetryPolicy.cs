@@ -17,7 +17,7 @@ namespace migration_pair
 
         public RetryDecision OnWriteTimeout(IStatement query, ConsistencyLevel cl, string writeType, int requiredAcks, int receivedAcks, int nbRetry)
         {
-            Task.Delay(300);
+            Task.Delay(300).Wait();
 
             return RetryDecision.Retry(cl);
         }
