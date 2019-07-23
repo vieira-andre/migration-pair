@@ -1,4 +1,4 @@
-﻿namespace migration_pair.Models
+﻿namespace migration_pair
 {
     internal enum TaskToPerform
     {
