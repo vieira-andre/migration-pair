@@ -9,7 +9,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace migration_pair
@@ -56,7 +55,7 @@ namespace migration_pair
             {
                 Log.Write("Building source cluster and connecting session...");
 
-                sourceCluster = Cluster.Builder().AddContactPoints(config.SourceEndPoints).Build();
+                sourceCluster = Cluster.Builder().WithPort(config.SourcePort).AddContactPoints(config.SourceEndPoints).Build();
                 sourceSession = sourceCluster.Connect();
             }
         }
@@ -67,7 +66,7 @@ namespace migration_pair
             {
                 Log.Write("Building target cluster and connecting session...");
 
-                targetCluster = Cluster.Builder().AddContactPoints(config.TargetEndPoints).Build();
+                targetCluster = Cluster.Builder().WithPort(config.TargetPort).AddContactPoints(config.TargetEndPoints).Build();
                 targetSession = targetCluster.Connect();
             }
         }
