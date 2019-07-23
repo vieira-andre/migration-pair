@@ -66,7 +66,7 @@ namespace migration_pair
             {
                 Log.Write("Building target cluster and connecting session...");
 
-                targetCluster = Cluster.Builder().WithPort(config.TargetPort).AddContactPoints(config.TargetEndPoints).Build();
+                targetCluster = Cluster.Builder().WithPort(config.TargetPort).WithRetryPolicy(new CustomRetryPolicy()).AddContactPoints(config.TargetEndPoints).Build();
                 targetSession = targetCluster.Connect();
             }
         }
