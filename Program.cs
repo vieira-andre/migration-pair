@@ -111,7 +111,7 @@ namespace migration_pair
                 BuildTargetClusterAndSession();
 
                 IList<CColumn> columns = GetColumnsInfo(config.TargetKeyspace, config.TargetTable);
-                InsertDataIntoTableAsync(tableData, columns).Wait();
+                InsertDataIntoTable(ref tableData, ref columns);
             }
             catch (AggregateException aggEx)
             {
@@ -237,7 +237,7 @@ namespace migration_pair
             return columns;
         }
 
-        private static async Task InsertDataIntoTableAsync(IList<string[]> tableData, IList<CColumn> columns)
+        private static void InsertDataIntoTable(ref IList<string[]> tableData, ref IList<CColumn> columns)
         {
             Log.Write("Inserting data into target table...");
 
@@ -247,10 +247,7 @@ namespace migration_pair
             string cql = $"INSERT INTO {config.TargetKeyspace}.{config.TargetTable} ({columnsAsString}) VALUES ({valuesPlaceholders})";
             PreparedStatement pStatement = targetSession.Prepare(cql);
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
-
-            var tasks = new ConcurrentQueue<Task>();
+            var insertStatements = new List<BoundStatement>();
 
             foreach (string[] row in tableData)
             {
@@ -263,10 +260,26 @@ namespace migration_pair
                     i++;
                 }
 
-                if (IsRequestsLimitReached()) await Task.Delay(300);
-
                 BoundStatement bStatement = pStatement.Bind(preparedRow);
-                tasks.Enqueue(targetSession.ExecuteAsync(bStatement));
+
+                insertStatements.Add(bStatement);
+            }
+
+            ExecuteInsertAsync(insertStatements).Wait();
+        }
+
+        private static async Task ExecuteInsertAsync(IList<BoundStatement> insertStatements)
+        {
+            var tasks = new ConcurrentQueue<Task>();
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            foreach (var stmt in insertStatements)
+            {
+                if (IsRequestsLimitReached()) Task.Delay(300).Wait();
+
+                tasks.Enqueue(targetSession.ExecuteAsync(stmt));
             }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
