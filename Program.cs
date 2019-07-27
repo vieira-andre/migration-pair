@@ -306,6 +306,8 @@ namespace migration_pair
             return currentInFlightQueries;
         }
 
+        private static int MaxRequestsPerConnection() => targetSession.Cluster.Configuration.PoolingOptions.GetMaxRequestsPerConnection();
+
         private static void ExtractAndInsert()
         {
             BuildSourceClusterAndSession();
