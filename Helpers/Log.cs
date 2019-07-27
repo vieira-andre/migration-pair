@@ -26,14 +26,16 @@ namespace migration_pair.Helpers
         {
             Write($"Task to perform: {procedure}");
 
-            string extractMsg = string.Join(' ',
-                $"[source_endpoints] {string.Join(',', config.SourceEndPoints)}",
-                $"[source_keyspace] {config.SourceKeyspace}",
+            string extractMsg = string.Join(' ', "Source info:", Environment.NewLine,
+                $"[source_endpoints] {string.Join(',', config.SourceEndPoints)}", Environment.NewLine,
+                $"[source_port] {config.SourcePort}", Environment.NewLine,
+                $"[source_keyspace] {config.SourceKeyspace}", Environment.NewLine,
                 $"[source_table] {config.SourceTable}");
 
-            string insertMsg = string.Join(' ',
-                $"[target_endpoints] {string.Join(',', config.TargetEndPoints)}",
-                $"[target_keyspace] {config.TargetKeyspace}",
+            string insertMsg = string.Join(' ', "Target info", Environment.NewLine,
+                $"[target_endpoints] {string.Join(',', config.TargetEndPoints)}", Environment.NewLine,
+                $"[target_port] {config.TargetPort}", Environment.NewLine,
+                $"[target_keyspace] {config.TargetKeyspace}", Environment.NewLine,
                 $"[target_table] {config.TargetTable}");
 
             switch (procedure)
