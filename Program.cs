@@ -301,6 +301,17 @@ namespace migration_pair
             return false;
         }
 
+        private static int CurrentInFlightQueries()
+        {
+            ISessionState state = targetSession.GetState();
+            int currentInFlightQueries = 0;
+
+            foreach (var host in state.GetConnectedHosts())
+                currentInFlightQueries += state.GetInFlightQueries(host);
+
+            return currentInFlightQueries;
+        }
+
         private static void ExtractAndInsert()
         {
             BuildSourceClusterAndSession();
