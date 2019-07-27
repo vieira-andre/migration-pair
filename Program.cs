@@ -290,15 +290,9 @@ namespace migration_pair
 
         private static bool IsRequestsLimitReached()
         {
-            ISessionState state = targetSession.GetState();
-
-            foreach (var host in state.GetConnectedHosts())
-            {
-                if (state.GetInFlightQueries(host) >= targetSession.Cluster.Configuration.PoolingOptions.GetMaxRequestsPerConnection())
-                    return true;
-            }
-
-            return false;
+            return CurrentInFlightQueries() >= targetSession.Cluster.Configuration.PoolingOptions.GetMaxRequestsPerConnection()
+                   ? true
+                   : false;
         }
 
         private static int CurrentInFlightQueries()
