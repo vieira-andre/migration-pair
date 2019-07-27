@@ -261,7 +261,6 @@ namespace migration_pair
                 }
 
                 BoundStatement bStatement = pStatement.Bind(preparedRow);
-
                 insertStatements.Add(bStatement);
             }
 
@@ -277,7 +276,11 @@ namespace migration_pair
 
             foreach (var stmt in insertStatements)
             {
-                if (IsRequestsLimitReached()) Task.Delay(300).Wait();
+                if (IsRequestsLimitReached())
+                {
+                    while (CurrentInFlightQueries() > MaxRequestsPerConnection() / 2)
+                        Task.Delay(10).Wait();
+                }
 
                 tasks.Enqueue(targetSession.ExecuteAsync(stmt));
             }
