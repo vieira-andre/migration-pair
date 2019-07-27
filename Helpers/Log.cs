@@ -32,7 +32,7 @@ namespace migration_pair.Helpers
                 $"[source_keyspace] {config.SourceKeyspace}", Environment.NewLine,
                 $"[source_table] {config.SourceTable}");
 
-            string insertMsg = string.Join(' ', "Target info", Environment.NewLine,
+            string insertMsg = string.Join(' ', "Target info:", Environment.NewLine,
                 $"[target_endpoints] {string.Join(',', config.TargetEndPoints)}", Environment.NewLine,
                 $"[target_port] {config.TargetPort}", Environment.NewLine,
                 $"[target_keyspace] {config.TargetKeyspace}", Environment.NewLine,
