@@ -1,7 +1,7 @@
 ﻿using Cassandra;
 using System.Threading.Tasks;
 
-namespace migration_pair
+namespace migration_pair.Policies
 {
     internal class CustomRetryPolicy : IRetryPolicy
     {
