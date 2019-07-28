@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace migration_pair.Policies
 {
-    internal class CustomRetryPolicy : IRetryPolicy
+    internal class RetryPolicy : IRetryPolicy
     {
         public RetryDecision OnReadTimeout(IStatement query, ConsistencyLevel cl, int requiredResponses, int receivedResponses, bool dataRetrieved, int nbRetry)
         {

@@ -69,7 +69,7 @@ namespace migration_pair
 
                 targetCluster = Cluster.Builder()
                                 .WithPort(config.TargetPort)
-                                .WithRetryPolicy(new CustomRetryPolicy())
+                                .WithRetryPolicy(new RetryPolicy())
                                 .WithSocketOptions(new SocketOptions().SetReadTimeoutMillis(0))
                                 .AddContactPoints(config.TargetEndPoints)
                                 .Build();
