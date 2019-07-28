@@ -285,7 +285,7 @@ namespace migration_pair
                 if (IsRequestsLimitReached())
                 {
                     while (CurrentInFlightQueries() > MaxRequestsPerConnection() / 2)
-                        Task.Delay(10).Wait();
+                        await Task.Delay(10);
                 }
 
                 tasks.Enqueue(targetSession.ExecuteAsync(stmt));
