@@ -26,7 +26,7 @@ namespace migration_pair
 
         static void Main(string[] args)
         {
-            Enum.TryParse(config.TaskToPerform, true, out TaskToPerform procedure);
+            Enum.TryParse(config.TaskToPerform.Value, true, out TaskToPerform procedure);
             logger.Write(procedure, config);
 
             switch (procedure)
@@ -44,7 +44,7 @@ namespace migration_pair
                     break;
 
                 default:
-                    logger.Write("[Error] Config entry \"TaskToPerform\" is either unspecified or misspecified.");
+                    logger.Write($"[Error] Config entry {config.TaskToPerform.Path} is either unspecified or misspecified.");
                     break;
             }
 
