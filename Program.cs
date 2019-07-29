@@ -374,6 +374,8 @@ namespace migration_pair
         {
             if (sourceSession != null && !sourceSession.IsDisposed)
             {
+                logger.Write("Disposing source's cluster and session...");
+
                 sourceSession.Dispose();
                 sourceCluster.Dispose();
             }
@@ -383,6 +385,8 @@ namespace migration_pair
         {
             if (targetSession != null && !targetSession.IsDisposed)
             {
+                logger.Write("Disposing target's cluster and session...");
+
                 targetSession.Dispose();
                 targetCluster.Dispose();
             }
