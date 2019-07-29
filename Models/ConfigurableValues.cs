@@ -6,7 +6,7 @@ namespace migration_pair.Models
 {
     internal class ConfigurableValues
     {
-        public string TaskToPerform { get; private set; }
+        public IConfigurationSection TaskToPerform { get; private set; }
         public string FilePath { get; private set; }
         public string LogFilePath { get; set; }
         public string[] SourceEndPoints { get; private set; }
@@ -30,7 +30,7 @@ namespace migration_pair.Models
 
             new Log(LogFilePath).Write("Assigning configurable values...");
 
-            TaskToPerform = configuration.GetSection("TaskToPerform").Value;
+            TaskToPerform = configuration.GetSection("TaskToPerform");
             FilePath = configuration.GetSection("FilePath").Value;
             SourceEndPoints = configuration.GetSection("SourceEndpoints").Value.Split(',');
             SourcePort = int.TryParse(configuration.GetSection("SourcePort").Value, out int sourcePort) ? sourcePort : Cassandra.ProtocolOptions.DefaultPort;
