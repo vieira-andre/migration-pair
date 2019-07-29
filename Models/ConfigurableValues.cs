@@ -8,6 +8,7 @@ namespace migration_pair.Models
     {
         public string TaskToPerform { get; private set; }
         public string FilePath { get; private set; }
+        public string LogFilePath { get; set; }
         public string[] SourceEndPoints { get; private set; }
         public int SourcePort { get; private set; }
         public string SourceKeyspace { get; private set; }
@@ -25,7 +26,9 @@ namespace migration_pair.Models
 
             IConfigurationRoot configuration = builder.Build();
 
-            Log.Write("Assigning configurable values...");
+            LogFilePath = configuration.GetSection("LogFilePath").Value;
+
+            new Log(LogFilePath).Write("Assigning configurable values...");
 
             TaskToPerform = configuration.GetSection("TaskToPerform").Value;
             FilePath = configuration.GetSection("FilePath").Value;
