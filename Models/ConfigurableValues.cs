@@ -1,5 +1,7 @@
-﻿using migration_pair.Helpers;
+﻿using Microsoft.Extensions.Configuration;
+using migration_pair.Helpers;
 using System.Configuration;
+using System.IO;
 
 namespace migration_pair.Models
 {
@@ -18,6 +20,12 @@ namespace migration_pair.Models
 
         public ConfigurableValues()
         {
+            var builder = new ConfigurationBuilder()
+                              .SetBasePath(Directory.GetCurrentDirectory())
+                              .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+            IConfigurationRoot configuration = builder.Build();
+
             Log.Write("Assigning configurable values...");
 
             TaskToPerform = ConfigurationManager.AppSettings["Task_To_Perform"];
