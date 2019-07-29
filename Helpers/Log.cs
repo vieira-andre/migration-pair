@@ -1,17 +1,21 @@
 ﻿using migration_pair.Models;
 using System;
-using System.Configuration;
 using System.IO;
 
 namespace migration_pair.Helpers
 {
-    internal static class Log
+    internal class Log
     {
         private const string dateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffzzz";
-        private static readonly string logFilePath = ConfigurationManager.AppSettings["Log_File_Path"];
-        private static bool isFirstLog = true;
+        private readonly string logFilePath;
+        private bool isFirstLog = true;
 
-        internal static void Write(string message)
+        public Log(string logFilePath)
+        {
+            this.logFilePath = logFilePath;
+        }
+
+        internal void Write(string message)
         {
             _ = Directory.CreateDirectory(Path.GetDirectoryName(logFilePath));
 
@@ -22,7 +26,7 @@ namespace migration_pair.Helpers
             if (isFirstLog) isFirstLog = false;
         }
 
-        internal static void Write(TaskToPerform procedure, ConfigurableValues config)
+        internal void Write(TaskToPerform procedure, ConfigurableValues config)
         {
             Write($"Task to perform: {procedure}");
 
