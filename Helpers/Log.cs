@@ -8,7 +8,7 @@ namespace migration_pair.Helpers
     {
         private const string dateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffzzz";
         private readonly string logFilePath;
-        private bool isFirstLog = true;
+        private static bool isFirstLog = true;
 
         public Log(string logFilePath)
         {
