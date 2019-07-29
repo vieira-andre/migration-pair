@@ -17,6 +17,7 @@ namespace migration_pair
     class Program
     {
         private static readonly ConfigurableValues config = new ConfigurableValues();
+        private static readonly Log logger = new Log(config.LogFilePath);
 
         #region Clusters & sessions
         private static ICluster sourceCluster, targetCluster;
@@ -26,7 +27,7 @@ namespace migration_pair
         static void Main(string[] args)
         {
             Enum.TryParse(config.TaskToPerform, true, out TaskToPerform procedure);
-            Log.Write(procedure, config);
+            logger.Write(procedure, config);
 
             switch (procedure)
             {
@@ -43,18 +44,18 @@ namespace migration_pair
                     break;
 
                 default:
-                    Log.Write("[Error] Config entry \"Task_To_Perform\" is either unspecified or misspecified.");
+                    logger.Write("[Error] Config entry \"Task_To_Perform\" is either unspecified or misspecified.");
                     break;
             }
 
-            Log.Write("Ending application...");
+            logger.Write("Ending application...");
         }
 
         private static void BuildSourceClusterAndSession()
         {
             if (sourceSession == null)
             {
-                Log.Write("Building source cluster and connecting session...");
+                logger.Write("Building source cluster and connecting session...");
 
                 sourceCluster = Cluster.Builder().WithPort(config.SourcePort).AddContactPoints(config.SourceEndPoints).Build();
                 sourceSession = sourceCluster.Connect();
@@ -65,7 +66,7 @@ namespace migration_pair
         {
             if (targetSession == null)
             {
-                Log.Write("Building target cluster and connecting session...");
+                logger.Write("Building target cluster and connecting session...");
 
                 targetCluster = Cluster.Builder()
                                 .WithPort(config.TargetPort)
@@ -80,7 +81,7 @@ namespace migration_pair
 
         private static void ExtractionPhase()
         {
-            Log.Write("Starting extraction phase...");
+            logger.Write("Starting extraction phase...");
 
             try
             {
@@ -95,11 +96,11 @@ namespace migration_pair
             catch (AggregateException aggEx)
             {
                 foreach (Exception ex in aggEx.Flatten().InnerExceptions)
-                    Log.Write($"[Exception] {ex.ToString()}");
+                    logger.Write($"[Exception] {ex.ToString()}");
             }
             catch (Exception ex)
             {
-                Log.Write($"[Exception] {ex.ToString()}");
+                logger.Write($"[Exception] {ex.ToString()}");
             }
             finally
             {
@@ -109,7 +110,7 @@ namespace migration_pair
 
         private static void InsertionPhase()
         {
-            Log.Write("Starting insertion phase...");
+            logger.Write("Starting insertion phase...");
 
             try
             {
@@ -123,11 +124,11 @@ namespace migration_pair
             catch (AggregateException aggEx)
             {
                 foreach (Exception ex in aggEx.Flatten().InnerExceptions)
-                    Log.Write($"[Exception] {ex.ToString()}");
+                    logger.Write($"[Exception] {ex.ToString()}");
             }
             catch (Exception ex)
             {
-                Log.Write($"[Exception] {ex.ToString()}");
+                logger.Write($"[Exception] {ex.ToString()}");
             }
             finally
             {
@@ -137,7 +138,7 @@ namespace migration_pair
 
         private static void GetRows(ref CTable ctable)
         {
-            Log.Write("Getting rows from source table...");
+            logger.Write("Getting rows from source table...");
 
             string cql = $"SELECT * FROM {ctable.Keyspace}.{ctable.Name}";
             var statement = new SimpleStatement(cql);
@@ -157,12 +158,12 @@ namespace migration_pair
                 ctable.Rows.Add(row);
             }
 
-            Log.Write($"Rows retrieved: {ctable.Rows.Count}");
+            logger.Write($"Rows retrieved: {ctable.Rows.Count}");
         }
 
         private static StringBuilder WriteResultsToObject(CTable ctable)
         {
-            Log.Write("Writing extraction results to object...");
+            logger.Write("Writing extraction results to object...");
 
             var tableData = new StringBuilder();
 
@@ -188,7 +189,7 @@ namespace migration_pair
 
         private static void SaveResultsIntoFile(ref StringBuilder tableData, string filePath)
         {
-            Log.Write("Saving extraction results into file...");
+            logger.Write("Saving extraction results into file...");
 
             _ = Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             File.WriteAllText(filePath, tableData.ToString());
@@ -196,7 +197,7 @@ namespace migration_pair
 
         private static IList<string[]> ReadFromFile(string filePath)
         {
-            Log.Write("Reading data from file...");
+            logger.Write("Reading data from file...");
 
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("The file either does not exist or there is a lack of permissions to read it. Check the path provided.");
@@ -223,14 +224,14 @@ namespace migration_pair
                 }
             }
 
-            Log.Write($"Rows retrieved: {tableData.Count}");
+            logger.Write($"Rows retrieved: {tableData.Count}");
 
             return tableData;
         }
 
         private static IList<CColumn> GetColumnsInfo(string keyspace, string table)
         {
-            Log.Write($"Getting columns info: [table] {table} [keyspace] {keyspace}");
+            logger.Write($"Getting columns info: [table] {table} [keyspace] {keyspace}");
 
             var columns = new List<CColumn>();
 
@@ -246,7 +247,7 @@ namespace migration_pair
 
         private static void InsertDataIntoTable(ref IList<string[]> tableData, ref IList<CColumn> columns)
         {
-            Log.Write("Inserting data into target table...");
+            logger.Write("Inserting data into target table...");
 
             string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
             string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
@@ -295,7 +296,7 @@ namespace migration_pair
             await Task.WhenAll(tasks).ConfigureAwait(false);
 
             stopwatch.Stop();
-            Log.Write($"Elapsed insertion time: {stopwatch.ElapsedMilliseconds} ms");
+            logger.Write($"Elapsed insertion time: {stopwatch.ElapsedMilliseconds} ms");
         }
 
         private static bool IsRequestsLimitReached()
@@ -340,7 +341,7 @@ namespace migration_pair
 
             if (sourceColumns.Count != targetColumns.Count)
             {
-                Log.Write("[Error] Tables from source and target have divergent number of columns.");
+                logger.Write("[Error] Tables from source and target have divergent number of columns.");
                 return false;
             }
 
@@ -360,11 +361,11 @@ namespace migration_pair
 
             if (matches.Count == sourceColumns.Count)
             {
-                Log.Write("Tables are compliant with each other.");
+                logger.Write("Tables are compliant with each other.");
                 return true;
             }
             else
-                Log.Write($"Tables are not compliant with each other: {sourceColumns.Count - matches.Count} mismatch(es) among {sourceColumns.Count} columns.");
+                logger.Write($"Tables are not compliant with each other: {sourceColumns.Count - matches.Count} mismatch(es) among {sourceColumns.Count} columns.");
 
             return false;
         }
