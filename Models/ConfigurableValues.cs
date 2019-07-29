@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using migration_pair.Helpers;
-using System.Configuration;
 using System.IO;
 
 namespace migration_pair.Models
@@ -28,16 +27,16 @@ namespace migration_pair.Models
 
             Log.Write("Assigning configurable values...");
 
-            TaskToPerform = ConfigurationManager.AppSettings["Task_To_Perform"];
-            FilePath = ConfigurationManager.AppSettings["File_Path"];
-            SourceEndPoints = ConfigurationManager.AppSettings["Source_Endpoints"].Split(',');
-            SourcePort = int.TryParse(ConfigurationManager.AppSettings["Source_Port"], out int sourcePort) ? sourcePort : Cassandra.ProtocolOptions.DefaultPort;
-            SourceKeyspace = ConfigurationManager.AppSettings["Source_Keyspace"];
-            SourceTable = ConfigurationManager.AppSettings["Source_Table"];
-            TargetEndPoints = ConfigurationManager.AppSettings["Target_Endpoints"].Split(',');
-            TargetPort = int.TryParse(ConfigurationManager.AppSettings["Target_Port"], out int targetPort) ? targetPort : Cassandra.ProtocolOptions.DefaultPort;
-            TargetKeyspace = ConfigurationManager.AppSettings["Target_Keyspace"];
-            TargetTable = ConfigurationManager.AppSettings["Target_Table"];
+            TaskToPerform = configuration.GetSection("TaskToPerform").Value;
+            FilePath = configuration.GetSection("FilePath").Value;
+            SourceEndPoints = configuration.GetSection("SourceEndpoints").Value.Split(',');
+            SourcePort = int.TryParse(configuration.GetSection("SourcePort").Value, out int sourcePort) ? sourcePort : Cassandra.ProtocolOptions.DefaultPort;
+            SourceKeyspace = configuration.GetSection("SourceKeyspace").Value;
+            SourceTable = configuration.GetSection("SourceTable").Value;
+            TargetEndPoints = configuration.GetSection("TargetEndpoints").Value.Split(',');
+            TargetPort = int.TryParse(configuration.GetSection("TargetPort").Value, out int targetPort) ? targetPort : Cassandra.ProtocolOptions.DefaultPort;
+            TargetKeyspace = configuration.GetSection("TargetKeyspace").Value;
+            TargetTable = configuration.GetSection("TargetTable").Value;
         }
     }
 }
