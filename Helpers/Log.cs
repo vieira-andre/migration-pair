@@ -6,24 +6,24 @@ namespace migration_pair.Helpers
 {
     internal class Log
     {
-        private const string dateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffzzz";
-        private readonly string logFilePath;
-        private static bool isFirstLog = true;
+        private const string DateTimeFormat = "yyyy-MM-ddTHH:mm:ss.fffzzz";
+        private readonly string _logFilePath;
+        private static bool _isFirstLog = true;
 
         public Log(string logFilePath)
         {
-            this.logFilePath = logFilePath;
+            _logFilePath = logFilePath;
         }
 
         internal void Write(string message)
         {
-            _ = Directory.CreateDirectory(Path.GetDirectoryName(logFilePath));
+            _ = Directory.CreateDirectory(Path.GetDirectoryName(_logFilePath));
 
-            File.AppendAllText(logFilePath, string.Concat(
-                isFirstLog ? Environment.NewLine : null,
-                DateTime.Now.ToString(dateTimeFormat), " >> ", message, Environment.NewLine));
+            File.AppendAllText(_logFilePath, string.Concat(
+                _isFirstLog ? Environment.NewLine : null,
+                DateTime.Now.ToString(DateTimeFormat), " >> ", message, Environment.NewLine));
 
-            if (isFirstLog) isFirstLog = false;
+            if (_isFirstLog) _isFirstLog = false;
         }
 
         internal void Write(TaskToPerform procedure, ConfigurableValues config)
