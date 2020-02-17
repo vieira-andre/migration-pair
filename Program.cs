@@ -77,6 +77,7 @@ namespace migration_pair
             _targetCluster = Cluster.Builder()
                 .WithPort(Config.TargetPort)
                 .WithRetryPolicy(new RetryPolicy())
+                .WithPoolingOptions(PoolingOptions.Create())
                 .WithSocketOptions(new SocketOptions().SetReadTimeoutMillis(0))
                 .AddContactPoints(Config.TargetEndPoints)
                 .Build();
