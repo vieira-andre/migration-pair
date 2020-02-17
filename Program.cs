@@ -54,6 +54,7 @@ namespace migration_pair
             }
 
             Logger.Info("Ending application...");
+            _ = Console.ReadLine();
         }
 
         #region private methods
