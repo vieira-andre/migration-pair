@@ -28,6 +28,8 @@ namespace migration_pair
 
         static void Main()
         {
+            ConfigureNLog();
+
             if (!Enum.TryParse(Config.TaskToPerform.Value, true, out TaskToPerform procedure))
                 Logger.Error($"Config entry {Config.TaskToPerform.Path} is either unspecified or misspecified.");
 
