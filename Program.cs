@@ -222,9 +222,7 @@ namespace migration_pair
                 foreach (IDictionary<string, object> record in records)
                 {
                     var row = new List<string>(record.Values.Count);
-
-                    foreach (string value in record.Values)
-                        row.Add(value);
+                    row.AddRange(record.Values.Cast<string>());
 
                     tableData.Add(row.ToArray());
                 }
@@ -239,16 +237,11 @@ namespace migration_pair
         {
             _logger.Write($"Getting columns info: [table] {table} [keyspace] {keyspace}");
 
-            var columns = new List<CColumn>();
-
             string cql = $"SELECT * FROM {keyspace}.{table} LIMIT 1";
             var statement = new SimpleStatement(cql);
             RowSet results = _targetSession.Execute(statement);
 
-            foreach (CqlColumn column in results.Columns)
-                columns.Add(new CColumn(column.Name, column.Type));
-
-            return columns;
+            return results.Columns.Select(column => new CColumn(column.Name, column.Type)).ToList();
         }
 
         private static void InsertDataIntoTable(ref IList<string[]> tableData, ref IList<CColumn> columns)
@@ -313,12 +306,8 @@ namespace migration_pair
         private static int CurrentInFlightQueries()
         {
             ISessionState state = _targetSession.GetState();
-            int currentInFlightQueries = 0;
 
-            foreach (var host in state.GetConnectedHosts())
-                currentInFlightQueries += state.GetInFlightQueries(host);
-
-            return currentInFlightQueries;
+            return state.GetConnectedHosts().Sum(host => state.GetInFlightQueries(host));
         }
 
         private static int MaxRequestsPerConnection()
