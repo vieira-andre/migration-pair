@@ -20,7 +20,6 @@ namespace migration_pair
     class Program
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private static readonly Log _logger = new Log(Config.LogFilePath);
 
         #region Clusters & sessions
         private static ICluster _sourceCluster, _targetCluster;
@@ -30,9 +29,9 @@ namespace migration_pair
         static void Main()
         {
             if (!Enum.TryParse(Config.TaskToPerform.Value, true, out TaskToPerform procedure))
-                _logger.Write($"[Error] Config entry {Config.TaskToPerform.Path} is either unspecified or misspecified.");
+                Logger.Error($"Config entry {Config.TaskToPerform.Path} is either unspecified or misspecified.");
 
-            _logger.Write(procedure);
+            //_logger.Write(procedure);
 
             switch (procedure)
             {
@@ -52,7 +51,7 @@ namespace migration_pair
                     break;
             }
 
-            _logger.Write("Ending application...");
+            Logger.Info("Ending application...");
         }
 
         private static void ConfigureNLog()
@@ -80,7 +79,7 @@ namespace migration_pair
             if (_sourceSession != null)
                 return;
 
-            _logger.Write("Building source cluster and connecting session...");
+            Logger.Info("Building source cluster and connecting session...");
 
             _sourceCluster = Cluster.Builder()
                 .WithPort(Config.SourcePort)
@@ -95,7 +94,7 @@ namespace migration_pair
             if (_targetSession != null)
                 return;
 
-            _logger.Write("Building target cluster and connecting session...");
+            Logger.Info("Building target cluster and connecting session...");
 
             _targetCluster = Cluster.Builder()
                 .WithPort(Config.TargetPort)
@@ -110,7 +109,7 @@ namespace migration_pair
 
         private static void ExtractionPhase()
         {
-            _logger.Write("Starting extraction phase...");
+            Logger.Info("Starting extraction phase...");
 
             try
             {
@@ -125,11 +124,11 @@ namespace migration_pair
             catch (AggregateException aggEx)
             {
                 foreach (Exception ex in aggEx.Flatten().InnerExceptions)
-                    _logger.Write($"[Exception] {ex}");
+                    Logger.Error(ex);
             }
             catch (Exception ex)
             {
-                _logger.Write($"[Exception] {ex}");
+                Logger.Info(ex);
             }
             finally
             {
@@ -139,7 +138,7 @@ namespace migration_pair
 
         private static void InsertionPhase()
         {
-            _logger.Write("Starting insertion phase...");
+            Logger.Info("Starting insertion phase...");
 
             try
             {
@@ -153,11 +152,11 @@ namespace migration_pair
             catch (AggregateException aggEx)
             {
                 foreach (Exception ex in aggEx.Flatten().InnerExceptions)
-                    _logger.Write($"[Exception] {ex}");
+                    Logger.Error(ex);
             }
             catch (Exception ex)
             {
-                _logger.Write($"[Exception] {ex}");
+                Logger.Error(ex);
             }
             finally
             {
@@ -167,7 +166,7 @@ namespace migration_pair
 
         private static void GetRows(ref CTable ctable)
         {
-            _logger.Write("Getting rows from source table...");
+            Logger.Info("Getting rows from source table...");
 
             string cql = $"SELECT * FROM {ctable.Keyspace}.{ctable.Name}";
             var statement = new SimpleStatement(cql);
@@ -187,12 +186,12 @@ namespace migration_pair
                 ctable.Rows.Add(row);
             }
 
-            _logger.Write($"Rows retrieved: {ctable.Rows.Count}");
+            Logger.Info($"Rows retrieved: {ctable.Rows.Count}");
         }
 
         private static StringBuilder WriteResultsToObject(CTable ctable)
         {
-            _logger.Write("Writing extraction results to object...");
+            Logger.Info("Writing extraction results to object...");
 
             var tableData = new StringBuilder();
 
@@ -218,7 +217,7 @@ namespace migration_pair
 
         private static void SaveResultsIntoFile(ref StringBuilder tableData, string filePath)
         {
-            _logger.Write("Saving extraction results into file...");
+            Logger.Info("Saving extraction results into file...");
 
             _ = Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             File.WriteAllText(filePath, tableData.ToString());
@@ -226,7 +225,7 @@ namespace migration_pair
 
         private static IList<string[]> ReadFromFile(string filePath)
         {
-            _logger.Write("Reading data from file...");
+            Logger.Info("Reading data from file...");
 
             if (!File.Exists(filePath))
                 throw new FileNotFoundException("The file either does not exist or there is a lack of permissions to read it. Check the path provided.");
@@ -249,7 +248,7 @@ namespace migration_pair
                 }
             }
 
-            _logger.Write($"Rows retrieved: {tableData.Count}");
+            Logger.Info($"Rows retrieved: {tableData.Count}");
 
             return tableData;
         }
@@ -263,7 +262,7 @@ namespace migration_pair
 
         private static IList<CColumn> GetColumnsInfo(string keyspace, string table)
         {
-            _logger.Write($"Getting columns info: [table] {table} [keyspace] {keyspace}");
+            Logger.Info($"Getting columns info: [table] {table} [keyspace] {keyspace}");
 
             string cql = $"SELECT * FROM {keyspace}.{table} LIMIT 1";
             var statement = new SimpleStatement(cql);
@@ -274,7 +273,7 @@ namespace migration_pair
 
         private static void InsertDataIntoTable(ref IList<string[]> tableData, ref IList<CColumn> columns)
         {
-            _logger.Write("Inserting data into target table...");
+            Logger.Info("Inserting data into target table...");
 
             string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
             string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
@@ -323,7 +322,7 @@ namespace migration_pair
             await Task.WhenAll(tasks).ConfigureAwait(false);
 
             stopwatch.Stop();
-            _logger.Write($"Elapsed insertion time: {stopwatch.ElapsedMilliseconds} ms");
+            Logger.Info($"Elapsed insertion time: {stopwatch.ElapsedMilliseconds} ms");
         }
 
         private static bool IsRequestsLimitReached()
@@ -365,7 +364,7 @@ namespace migration_pair
 
             if (sourceColumns.Count != targetColumns.Count)
             {
-                _logger.Write("[Error] Tables from source and target have divergent number of columns.");
+                Logger.Error("Tables from source and target have divergent number of columns.");
                 return false;
             }
 
@@ -385,11 +384,11 @@ namespace migration_pair
 
             if (matches.Count == sourceColumns.Count)
             {
-                _logger.Write("Tables are compliant with each other.");
+                Logger.Info("Tables are compliant with each other.");
                 return true;
             }
 
-            _logger.Write($"Tables are not compliant with each other: {sourceColumns.Count - matches.Count} mismatch(es) among {sourceColumns.Count} columns.");
+            Logger.Error($"Tables are not compliant with each other: {sourceColumns.Count - matches.Count} mismatch(es) among {sourceColumns.Count} columns.");
 
             return false;
         }
@@ -399,7 +398,7 @@ namespace migration_pair
             if (_sourceSession == null || _sourceSession.IsDisposed)
                 return;
 
-            _logger.Write("Disposing source's cluster and session...");
+            Logger.Info("Disposing source's cluster and session...");
 
             _sourceSession.Dispose();
             _sourceCluster.Dispose();
@@ -410,7 +409,7 @@ namespace migration_pair
             if (_targetSession == null || _targetSession.IsDisposed)
                 return;
 
-            _logger.Write("Disposing target's cluster and session...");
+            Logger.Info("Disposing target's cluster and session...");
 
             _targetSession.Dispose();
             _targetCluster.Dispose();
