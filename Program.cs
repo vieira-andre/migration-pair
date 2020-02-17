@@ -28,8 +28,6 @@ namespace migration_pair
 
         static void Main()
         {
-            ConfigureNLog();
-
             if (!Enum.TryParse(Config.TaskToPerform.Value, true, out TaskToPerform procedure))
                 Logger.Error($"Config entry {Config.TaskToPerform.Path} is either unspecified or misspecified.");
 
@@ -58,26 +56,6 @@ namespace migration_pair
         }
 
         #region private methods
-
-        private static void ConfigureNLog()
-        {
-            var config = new NLog.Config.LoggingConfiguration();
-
-            using (var logFile = new NLog.Targets.FileTarget("logfile")
-            {
-                ArchiveOldFileOnStartup = true,
-                ArchiveNumbering = NLog.Targets.ArchiveNumberingMode.DateAndSequence,
-                CreateDirs = true,
-                FileName = Config.LogFilePath
-            })
-            using (var logConsole = new NLog.Targets.ConsoleTarget("logconsole"))
-            {
-                config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Error, logConsole);
-                config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Error, logFile);
-            }
-
-            LogManager.Configuration = config;
-        }
 
         private static void BuildSourceClusterAndSession()
         {
