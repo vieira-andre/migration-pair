@@ -213,9 +213,7 @@ namespace migration_pair
             using (TextReader reader = new StreamReader(filePath))
             using (var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                csvReader.Configuration.Delimiter = ",";
-                csvReader.Configuration.HasHeaderRecord = false;
-                csvReader.Configuration.MissingFieldFound = null;
+                ConfigureCsvReader(csvReader);
 
                 var records = csvReader.GetRecords<dynamic>();
 
@@ -231,6 +229,13 @@ namespace migration_pair
             _logger.Write($"Rows retrieved: {tableData.Count}");
 
             return tableData;
+        }
+
+        private static void ConfigureCsvReader(CsvReader csvReader)
+        {
+            csvReader.Configuration.Delimiter = ",";
+            csvReader.Configuration.HasHeaderRecord = false;
+            csvReader.Configuration.MissingFieldFound = null;
         }
 
         private static IList<CColumn> GetColumnsInfo(string keyspace, string table)
