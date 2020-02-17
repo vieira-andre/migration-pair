@@ -45,7 +45,7 @@ namespace migration_pair
                     ExtractAndInsert();
                     break;
 
-                default:                    
+                default:
                     break;
             }
 
@@ -54,7 +54,8 @@ namespace migration_pair
 
         private static void BuildSourceClusterAndSession()
         {
-            if (_sourceSession != null) return;
+            if (_sourceSession != null)
+                return;
 
             _logger.Write("Building source cluster and connecting session...");
 
@@ -62,12 +63,14 @@ namespace migration_pair
                 .WithPort(Config.SourcePort)
                 .AddContactPoints(Config.SourceEndPoints)
                 .Build();
+
             _sourceSession = _sourceCluster.Connect();
         }
 
         private static void BuildTargetClusterAndSession()
         {
-            if (_targetSession != null) return;
+            if (_targetSession != null)
+                return;
 
             _logger.Write("Building target cluster and connecting session...");
 
@@ -303,7 +306,7 @@ namespace migration_pair
 
         private static bool IsRequestsLimitReached()
         {
-            return CurrentInFlightQueries() >= _targetSession.Cluster.Configuration.PoolingOptions.GetMaxRequestsPerConnection();
+            return CurrentInFlightQueries() >= MaxRequestsPerConnection();
         }
 
         private static int CurrentInFlightQueries()
@@ -375,7 +378,8 @@ namespace migration_pair
 
         private static void DisposeSourceSessionAndCluster()
         {
-            if (_sourceSession == null || _sourceSession.IsDisposed) return;
+            if (_sourceSession == null || _sourceSession.IsDisposed) 
+                return;
 
             _logger.Write("Disposing source's cluster and session...");
 
@@ -385,7 +389,8 @@ namespace migration_pair
 
         private static void DisposeTargetSessionAndCluster()
         {
-            if (_targetSession == null || _targetSession.IsDisposed) return;
+            if (_targetSession == null || _targetSession.IsDisposed) 
+                return;
 
             _logger.Write("Disposing target's cluster and session...");
 
