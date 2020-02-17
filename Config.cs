@@ -7,7 +7,6 @@ namespace migration_pair
     {
         public static IConfigurationSection TaskToPerform => Configuration.GetSection("TaskToPerform");
         public static string FilePath => Configuration.GetSection("FilePath").Value;
-        public static string LogFilePath => Configuration.GetSection("LogFilePath").Value;
         public static string[] SourceEndPoints => Configuration.GetSection("SourceEndpoints").Value.Split(',');
         public static int SourcePort => int.TryParse(Configuration.GetSection("SourcePort").Value, out int sourcePort) ? sourcePort : Cassandra.ProtocolOptions.DefaultPort;
         public static string SourceKeyspace => Configuration.GetSection("SourceKeyspace").Value;
