@@ -26,21 +26,21 @@ namespace migration_pair.Helpers
             if (_isFirstLog) _isFirstLog = false;
         }
 
-        internal void Write(TaskToPerform procedure, ConfigurableValues config)
+        internal void Write(TaskToPerform procedure)
         {
             Write($"Task to perform: {procedure}");
 
             string extractMsg = string.Join(' ', "Source info:", Environment.NewLine,
-                $"[source_endpoints] {string.Join(',', config.SourceEndPoints)}", Environment.NewLine,
-                $"[source_port] {config.SourcePort}", Environment.NewLine,
-                $"[source_keyspace] {config.SourceKeyspace}", Environment.NewLine,
-                $"[source_table] {config.SourceTable}");
+                $"[source_endpoints] {string.Join(',', Config.SourceEndPoints)}", Environment.NewLine,
+                $"[source_port] {Config.SourcePort}", Environment.NewLine,
+                $"[source_keyspace] {Config.SourceKeyspace}", Environment.NewLine,
+                $"[source_table] {Config.SourceTable}");
 
             string insertMsg = string.Join(' ', "Target info:", Environment.NewLine,
-                $"[target_endpoints] {string.Join(',', config.TargetEndPoints)}", Environment.NewLine,
-                $"[target_port] {config.TargetPort}", Environment.NewLine,
-                $"[target_keyspace] {config.TargetKeyspace}", Environment.NewLine,
-                $"[target_table] {config.TargetTable}");
+                $"[target_endpoints] {string.Join(',', Config.TargetEndPoints)}", Environment.NewLine,
+                $"[target_port] {Config.TargetPort}", Environment.NewLine,
+                $"[target_keyspace] {Config.TargetKeyspace}", Environment.NewLine,
+                $"[target_table] {Config.TargetTable}");
 
             switch (procedure)
             {

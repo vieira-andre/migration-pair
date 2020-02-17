@@ -17,7 +17,6 @@ namespace migration_pair
 {
     class Program
     {
-        private static readonly ConfigurableValues Config = new ConfigurableValues();
         private static readonly Log _logger = new Log(Config.LogFilePath);
 
         #region Clusters & sessions
@@ -28,7 +27,7 @@ namespace migration_pair
         static void Main()
         {
             Enum.TryParse(Config.TaskToPerform.Value, true, out TaskToPerform procedure);
-            _logger.Write(procedure, Config);
+            _logger.Write(procedure);
 
             switch (procedure)
             {
