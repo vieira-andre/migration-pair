@@ -3,6 +3,7 @@ using CsvHelper;
 using migration_pair.Helpers;
 using migration_pair.Models;
 using migration_pair.Policies;
+using NLog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -12,11 +13,13 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Logger = NLog.Logger;
 
 namespace migration_pair
 {
     class Program
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly Log _logger = new Log(Config.LogFilePath);
 
         #region Clusters & sessions
@@ -50,6 +53,26 @@ namespace migration_pair
             }
 
             _logger.Write("Ending application...");
+        }
+
+        private static void ConfigureNLog()
+        {
+            var config = new NLog.Config.LoggingConfiguration();
+
+            using (var logFile = new NLog.Targets.FileTarget("logfile")
+            {
+                ArchiveOldFileOnStartup = true,
+                ArchiveNumbering = NLog.Targets.ArchiveNumberingMode.DateAndSequence,
+                CreateDirs = true,
+                FileName = Config.LogFilePath
+            })
+            using (var logConsole = new NLog.Targets.ConsoleTarget("logconsole"))
+            {
+                config.AddRule(NLog.LogLevel.Info, NLog.LogLevel.Error, logConsole);
+                config.AddRule(NLog.LogLevel.Debug, NLog.LogLevel.Error, logFile);
+            }
+
+            LogManager.Configuration = config;
         }
 
         private static void BuildSourceClusterAndSession()
@@ -373,7 +396,7 @@ namespace migration_pair
 
         private static void DisposeSourceSessionAndCluster()
         {
-            if (_sourceSession == null || _sourceSession.IsDisposed) 
+            if (_sourceSession == null || _sourceSession.IsDisposed)
                 return;
 
             _logger.Write("Disposing source's cluster and session...");
@@ -384,7 +407,7 @@ namespace migration_pair
 
         private static void DisposeTargetSessionAndCluster()
         {
-            if (_targetSession == null || _targetSession.IsDisposed) 
+            if (_targetSession == null || _targetSession.IsDisposed)
                 return;
 
             _logger.Write("Disposing target's cluster and session...");
