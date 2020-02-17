@@ -26,7 +26,9 @@ namespace migration_pair
 
         static void Main()
         {
-            Enum.TryParse(Config.TaskToPerform.Value, true, out TaskToPerform procedure);
+            if (!Enum.TryParse(Config.TaskToPerform.Value, true, out TaskToPerform procedure))
+                _logger.Write($"[Error] Config entry {Config.TaskToPerform.Path} is either unspecified or misspecified.");
+
             _logger.Write(procedure);
 
             switch (procedure)
@@ -43,8 +45,7 @@ namespace migration_pair
                     ExtractAndInsert();
                     break;
 
-                default:
-                    _logger.Write($"[Error] Config entry {Config.TaskToPerform.Path} is either unspecified or misspecified.");
+                default:                    
                     break;
             }
 
