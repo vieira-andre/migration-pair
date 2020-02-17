@@ -7,6 +7,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -206,7 +207,7 @@ namespace migration_pair
             var tableData = new List<string[]>();
 
             using (TextReader reader = new StreamReader(filePath))
-            using (var csvReader = new CsvReader(reader))
+            using (var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
                 csvReader.Configuration.Delimiter = ",";
                 csvReader.Configuration.HasHeaderRecord = false;
