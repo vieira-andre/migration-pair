@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.IO;
 
-namespace migration_pair.Models
+namespace migration_pair
 {
     public static class Config
     {
