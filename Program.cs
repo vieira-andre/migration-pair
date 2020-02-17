@@ -56,6 +56,8 @@ namespace migration_pair
             Logger.Info("Ending application...");
         }
 
+        #region private methods
+
         private static void ConfigureNLog()
         {
             var config = new NLog.Config.LoggingConfiguration();
@@ -416,5 +418,7 @@ namespace migration_pair
             _targetSession.Dispose();
             _targetCluster.Dispose();
         }
+
+        #endregion
     }
 }
