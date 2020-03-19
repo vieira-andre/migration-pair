@@ -94,31 +94,9 @@ namespace migration_pair
             {
                 BuildSourceClusterAndSession();
 
-                RowSet results = RetrieveRowsFromTable();
-                string columnNames = string.Join(',', results.Columns.Select(c => c.Name));
-
-                _ = Directory.CreateDirectory(Path.GetDirectoryName(Config.FilePath));
-                using var fileWriter = new StreamWriter(Config.FilePath);
-
-                fileWriter.WriteLine(columnNames);
-
-                Logger.Info("Processing rows...");
-
-                foreach (Row result in results)
-                {
-                    CField[] row = new CField[result.Length];
-
-                    for (int i = 0; i < result.Length; i++)
-                    {
-                        row[i] = results.Columns[i].Type.IsAssignableFrom(typeof(DateTimeOffset))
-                            ? new CField(((DateTimeOffset)result[i]).ToUnixTimeMilliseconds(), results.Columns[i].Name, typeof(long))
-                            : new CField(result[i], results.Columns[i].Name, results.Columns[i].Type);
-                    }
-
-                    string rowToWrite = PrepareRowToBeWritten(row);
-
-                    fileWriter.WriteLine(rowToWrite);
-                }
+                RowSet rows = RetrieveRowsFromTable();
+                
+                ProcessRows(rows);
             }
             catch (AggregateException aggEx)
             {
@@ -143,6 +121,33 @@ namespace migration_pair
             var statement = new SimpleStatement(cql);
 
             return _sourceSession.Execute(statement);
+        }
+
+        private static void ProcessRows(RowSet rows)
+        {
+            Logger.Info("Processing rows...");
+
+            _ = Directory.CreateDirectory(Path.GetDirectoryName(Config.FilePath));
+            using var fileWriter = new StreamWriter(Config.FilePath);
+
+            string columnNames = string.Join(',', rows.Columns.Select(c => c.Name));
+            fileWriter.WriteLine(columnNames);
+
+            foreach (Row row in rows)
+            {
+                CField[] rowFields = new CField[row.Length];
+
+                for (int i = 0; i < row.Length; i++)
+                {
+                    rowFields[i] = rows.Columns[i].Type.IsAssignableFrom(typeof(DateTimeOffset))
+                        ? new CField(((DateTimeOffset)row[i]).ToUnixTimeMilliseconds(), rows.Columns[i].Name, typeof(long))
+                        : new CField(row[i], rows.Columns[i].Name, rows.Columns[i].Type);
+                }
+
+                string rowToWrite = PrepareRowToBeWritten(rowFields);
+
+                fileWriter.WriteLine(rowToWrite);
+            }
         }
 
         private static string PrepareRowToBeWritten(CField[] row)
