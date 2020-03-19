@@ -95,11 +95,30 @@ namespace migration_pair
             {
                 BuildSourceClusterAndSession();
 
-                var ctable = new CTable(Config.SourceTable, Config.SourceKeyspace);
-                GetRows(ref ctable);
+                Logger.Info("Getting rows from source table...");
 
-                StringBuilder tableData = WriteResultsToObject(ctable);
-                SaveResultsIntoFile(ref tableData, Config.FilePath);
+                string cql = $"SELECT * FROM {Config.SourceKeyspace}.{Config.SourceTable}";
+                var statement = new SimpleStatement(cql);
+                RowSet results = _sourceSession.Execute(statement);
+
+                _ = Directory.CreateDirectory(Path.GetDirectoryName(Config.FilePath));
+                using var fileWriter = new StreamWriter(Config.FilePath);
+
+                foreach (Row result in results)
+                {
+                    CField[] row = new CField[result.Length];
+
+                    for (int i = 0; i < result.Length; i++)
+                    {
+                        row[i] = results.Columns[i].Type.IsAssignableFrom(typeof(DateTimeOffset))
+                            ? new CField(((DateTimeOffset)result[i]).ToUnixTimeMilliseconds(), results.Columns[i].Name, typeof(long))
+                            : new CField(result[i], results.Columns[i].Name, results.Columns[i].Type);
+                    }
+
+                    string rowToWrite = PrepareRowToBeWritten(row);
+
+                    fileWriter.WriteLine(rowToWrite);
+                }
             }
             catch (AggregateException aggEx)
             {
@@ -114,6 +133,23 @@ namespace migration_pair
             {
                 DisposeSourceSessionAndCluster();
             }
+        }
+
+        private static string PrepareRowToBeWritten(CField[] row)
+        {
+            var rowToWrite = new List<string>(row.Length);
+
+            foreach (CField cfield in row)
+            {
+                string valueToWrite = Convert.ToString(cfield.Value);
+
+                if (cfield.DataType == typeof(string) && !string.IsNullOrEmpty(valueToWrite))
+                    valueToWrite = $"\"{valueToWrite.Replace("\"", "\"\"")}\"";
+
+                rowToWrite.Add(valueToWrite);
+            }
+
+            return string.Join(',', rowToWrite);
         }
 
         private static void InsertionPhase()
@@ -142,65 +178,6 @@ namespace migration_pair
             {
                 DisposeTargetSessionAndCluster();
             }
-        }
-
-        private static void GetRows(ref CTable ctable)
-        {
-            Logger.Info("Getting rows from source table...");
-
-            string cql = $"SELECT * FROM {ctable.Keyspace}.{ctable.Name}";
-            var statement = new SimpleStatement(cql);
-            RowSet results = _sourceSession.Execute(statement);
-
-            foreach (Row result in results)
-            {
-                CField[] row = new CField[result.Length];
-
-                for (int i = 0; i < result.Length; i++)
-                {
-                    row[i] = results.Columns[i].Type.IsAssignableFrom(typeof(DateTimeOffset))
-                        ? new CField(((DateTimeOffset)result[i]).ToUnixTimeMilliseconds(), results.Columns[i].Name, typeof(long))
-                        : new CField(result[i], results.Columns[i].Name, results.Columns[i].Type);
-                }
-
-                ctable.Rows.Add(row);
-            }
-
-            Logger.Info($"Rows retrieved: {ctable.Rows.Count}");
-        }
-
-        private static StringBuilder WriteResultsToObject(CTable ctable)
-        {
-            Logger.Info("Writing extraction results to object...");
-
-            var tableData = new StringBuilder();
-
-            foreach (CField[] row in ctable.Rows)
-            {
-                var rowToWrite = new List<string>(row.Length);
-
-                foreach (CField cfield in row)
-                {
-                    string valueToWrite = Convert.ToString(cfield.Value);
-
-                    if (cfield.DataType == typeof(string) && !string.IsNullOrEmpty(valueToWrite))
-                        valueToWrite = $"\"{valueToWrite.Replace("\"", "\"\"")}\"";
-
-                    rowToWrite.Add(valueToWrite);
-                }
-
-                tableData.AppendLine(string.Join(',', rowToWrite));
-            }
-
-            return tableData;
-        }
-
-        private static void SaveResultsIntoFile(ref StringBuilder tableData, string filePath)
-        {
-            Logger.Info("Saving extraction results into file...");
-
-            _ = Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-            File.WriteAllText(filePath, tableData.ToString());
         }
 
         private static IList<string[]> ReadFromFile(string filePath)
