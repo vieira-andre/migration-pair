@@ -11,7 +11,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Logger = NLog.Logger;
 
@@ -95,11 +94,7 @@ namespace migration_pair
             {
                 BuildSourceClusterAndSession();
 
-                Logger.Info("Getting rows from source table...");
-
-                string cql = $"SELECT * FROM {Config.SourceKeyspace}.{Config.SourceTable}";
-                var statement = new SimpleStatement(cql);
-                RowSet results = _sourceSession.Execute(statement);
+                RowSet results = RetrieveRowsFromTable();
 
                 _ = Directory.CreateDirectory(Path.GetDirectoryName(Config.FilePath));
                 using var fileWriter = new StreamWriter(Config.FilePath);
@@ -133,6 +128,13 @@ namespace migration_pair
             {
                 DisposeSourceSessionAndCluster();
             }
+        }
+
+        private static RowSet RetrieveRowsFromTable()
+        {
+            string cql = $"SELECT * FROM {Config.SourceKeyspace}.{Config.SourceTable}";
+            var statement = new SimpleStatement(cql);
+            return _sourceSession.Execute(statement);
         }
 
         private static string PrepareRowToBeWritten(CField[] row)
