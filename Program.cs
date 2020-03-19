@@ -31,8 +31,6 @@ namespace migration_pair
             if (!Enum.TryParse(Config.TaskToPerform.Value, true, out TaskToPerform procedure))
                 Logger.Error($"Config entry {Config.TaskToPerform.Path} is either unspecified or misspecified.");
 
-            //_logger.Write(procedure);
-
             switch (procedure)
             {
                 case TaskToPerform.Extract:
@@ -52,7 +50,6 @@ namespace migration_pair
             }
 
             Logger.Info("Ending application...");
-            _ = Console.ReadLine();
         }
 
         #region private methods
