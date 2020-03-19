@@ -102,6 +102,8 @@ namespace migration_pair
 
                 fileWriter.WriteLine(columnNames);
 
+                Logger.Info("Processing rows...");
+
                 foreach (Row result in results)
                 {
                     CField[] row = new CField[result.Length];
@@ -135,8 +137,11 @@ namespace migration_pair
 
         private static RowSet RetrieveRowsFromTable()
         {
+            Logger.Info("Retrieving rows from table...");
+
             string cql = $"SELECT * FROM {Config.SourceKeyspace}.{Config.SourceTable}";
             var statement = new SimpleStatement(cql);
+
             return _sourceSession.Execute(statement);
         }
 
