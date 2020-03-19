@@ -95,9 +95,12 @@ namespace migration_pair
                 BuildSourceClusterAndSession();
 
                 RowSet results = RetrieveRowsFromTable();
+                string columnNames = string.Join(',', results.Columns.Select(c => c.Name));
 
                 _ = Directory.CreateDirectory(Path.GetDirectoryName(Config.FilePath));
                 using var fileWriter = new StreamWriter(Config.FilePath);
+
+                fileWriter.WriteLine(columnNames);
 
                 foreach (Row result in results)
                 {
