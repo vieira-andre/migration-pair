@@ -179,14 +179,10 @@ namespace migration_pair
                     throw new FileNotFoundException("The file either does not exist or there is a lack of permissions to read it. Check the path provided.");
 
                 IList<CColumn> columns = GetColumnsInfo(Config.TargetKeyspace, Config.TargetTable);
-                
+
                 IEnumerable<dynamic> records = ReadRecordsFromFile();
 
-                string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
-                string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
-
-                string cql = $"INSERT INTO {Config.TargetKeyspace}.{Config.TargetTable} ({columnsAsString}) VALUES ({valuesPlaceholders})";
-                PreparedStatement pStatement = _targetSession.Prepare(cql);
+                PreparedStatement pStatement = PrepareStatementForInsertion(columns);
 
                 var insertStatements = new List<BoundStatement>();
 
@@ -218,6 +214,16 @@ namespace migration_pair
             {
                 DisposeTargetSessionAndCluster();
             }
+        }
+
+        private static PreparedStatement PrepareStatementForInsertion(IList<CColumn> columns)
+        {
+            string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
+            string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
+
+            string cql = $"INSERT INTO {Config.TargetKeyspace}.{Config.TargetTable} ({columnsAsString}) VALUES ({valuesPlaceholders})";
+
+            return _targetSession.Prepare(cql);
         }
 
         private static IEnumerable<dynamic> ReadRecordsFromFile()
