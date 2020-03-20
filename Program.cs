@@ -228,7 +228,7 @@ namespace migration_pair
         private static void ConfigureCsvReader(CsvReader csvReader)
         {
             csvReader.Configuration.Delimiter = ",";
-            csvReader.Configuration.HasHeaderRecord = false;
+            csvReader.Configuration.HasHeaderRecord = true;
             csvReader.Configuration.MissingFieldFound = null;
         }
 
