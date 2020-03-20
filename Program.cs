@@ -201,14 +201,7 @@ namespace migration_pair
                     var row = new List<string>(record.Values.Count);
                     row.AddRange(record.Values.Cast<string>());
 
-                    dynamic[] preparedRow = new dynamic[row.Count];
-
-                    int i = 0;
-                    while (i < row.Count)
-                    {
-                        preparedRow[i] = DynamicTypeConverter.Convert(row[i], columns[i].DataType);
-                        i++;
-                    }
+                    dynamic[] preparedRow = PrepareRowForInsertion(columns, row);
 
                     BoundStatement bStatement = pStatement.Bind(preparedRow);
                     insertStatements.Add(bStatement);
@@ -231,6 +224,18 @@ namespace migration_pair
             {
                 DisposeTargetSessionAndCluster();
             }
+        }
+
+        private static dynamic[] PrepareRowForInsertion(IList<CColumn> columns, List<string> row)
+        {
+            dynamic[] preparedRow = new dynamic[row.Count];
+
+            for (int i = 0; i < row.Count; i++)
+            {
+                preparedRow[i] = DynamicTypeConverter.Convert(row[i], columns[i].DataType);
+            }
+
+            return preparedRow;
         }
 
         private static IList<string[]> ReadFromFile(string filePath)
