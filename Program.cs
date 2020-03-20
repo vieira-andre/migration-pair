@@ -179,14 +179,8 @@ namespace migration_pair
                     throw new FileNotFoundException("The file either does not exist or there is a lack of permissions to read it. Check the path provided.");
 
                 IList<CColumn> columns = GetColumnsInfo(Config.TargetKeyspace, Config.TargetTable);
-
-                Logger.Info("Reading data from file...");
-
-                using var reader = new StreamReader(Config.FilePath);
-                using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
-                ConfigureCsvReader(csvReader);
-
-                var records = csvReader.GetRecords<dynamic>();
+                
+                IEnumerable<dynamic> records = ReadRecordsFromFile();
 
                 string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
                 string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
@@ -224,6 +218,18 @@ namespace migration_pair
             {
                 DisposeTargetSessionAndCluster();
             }
+        }
+
+        private static IEnumerable<dynamic> ReadRecordsFromFile()
+        {
+            Logger.Info("Reading data from file...");
+
+            using var reader = new StreamReader(Config.FilePath);
+            using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
+            
+            ConfigureCsvReader(csvReader);
+
+            return csvReader.GetRecords<dynamic>();
         }
 
         private static dynamic[] PrepareRowForInsertion(IList<CColumn> columns, List<string> row)
