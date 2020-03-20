@@ -95,7 +95,7 @@ namespace migration_pair
                 BuildSourceClusterAndSession();
 
                 RowSet rows = RetrieveRowsFromTable();
-                
+
                 ProcessRows(rows);
             }
             catch (AggregateException aggEx)
@@ -173,12 +173,50 @@ namespace migration_pair
 
             try
             {
-                IList<string[]> tableData = ReadFromFile(Config.FilePath);
-
                 BuildTargetClusterAndSession();
 
+                if (!File.Exists(Config.FilePath))
+                    throw new FileNotFoundException("The file either does not exist or there is a lack of permissions to read it. Check the path provided.");
+
                 IList<CColumn> columns = GetColumnsInfo(Config.TargetKeyspace, Config.TargetTable);
-                InsertDataIntoTable(ref tableData, ref columns);
+
+                Logger.Info("Reading data from file...");
+
+                using var reader = new StreamReader(Config.FilePath);
+                using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
+                ConfigureCsvReader(csvReader);
+
+                var records = csvReader.GetRecords<dynamic>();
+
+                string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
+                string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
+
+                string cql = $"INSERT INTO {Config.TargetKeyspace}.{Config.TargetTable} ({columnsAsString}) VALUES ({valuesPlaceholders})";
+                PreparedStatement pStatement = _targetSession.Prepare(cql);
+
+                var insertStatements = new List<BoundStatement>();
+
+                foreach (IDictionary<string, object> record in records)
+                {
+                    var row = new List<string>(record.Values.Count);
+                    row.AddRange(record.Values.Cast<string>());
+
+                    dynamic[] preparedRow = new dynamic[row.Count];
+
+                    int i = 0;
+                    while (i < row.Count)
+                    {
+                        preparedRow[i] = DynamicTypeConverter.Convert(row[i], columns[i].DataType);
+                        i++;
+                    }
+
+                    BoundStatement bStatement = pStatement.Bind(preparedRow);
+                    insertStatements.Add(bStatement);
+                }
+
+                Logger.Info("Inserting data into target table...");
+
+                ExecuteInsertAsync(insertStatements).Wait();
             }
             catch (AggregateException aggEx)
             {
@@ -241,36 +279,6 @@ namespace migration_pair
             RowSet results = _targetSession.Execute(statement);
 
             return results.Columns.Select(column => new CColumn(column.Name, column.Type)).ToList();
-        }
-
-        private static void InsertDataIntoTable(ref IList<string[]> tableData, ref IList<CColumn> columns)
-        {
-            Logger.Info("Inserting data into target table...");
-
-            string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
-            string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
-
-            string cql = $"INSERT INTO {Config.TargetKeyspace}.{Config.TargetTable} ({columnsAsString}) VALUES ({valuesPlaceholders})";
-            PreparedStatement pStatement = _targetSession.Prepare(cql);
-
-            var insertStatements = new List<BoundStatement>();
-
-            foreach (string[] row in tableData)
-            {
-                dynamic[] preparedRow = new dynamic[row.Length];
-
-                int i = 0;
-                while (i < row.Length)
-                {
-                    preparedRow[i] = DynamicTypeConverter.Convert(row[i], columns[i].DataType);
-                    i++;
-                }
-
-                BoundStatement bStatement = pStatement.Bind(preparedRow);
-                insertStatements.Add(bStatement);
-            }
-
-            ExecuteInsertAsync(insertStatements).Wait();
         }
 
         private static async Task ExecuteInsertAsync(IList<BoundStatement> insertStatements)
