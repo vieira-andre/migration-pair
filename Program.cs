@@ -223,6 +223,8 @@ namespace migration_pair
 
         private static void ProcessRecords(IList<CColumn> columns, PreparedStatement pStatement, IEnumerable<dynamic> records)
         {
+            Logger.Info("Processing records...");
+
             var insertStatements = new List<BoundStatement>();
 
             foreach (IDictionary<string, object> record in records)
