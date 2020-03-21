@@ -199,6 +199,28 @@ namespace migration_pair
             }
         }
 
+        private static PreparedStatement PrepareStatementForInsertion(IList<CColumn> columns)
+        {
+            string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
+            string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
+
+            string cql = $"INSERT INTO {Config.TargetKeyspace}.{Config.TargetTable} ({columnsAsString}) VALUES ({valuesPlaceholders})";
+
+            return _targetSession.Prepare(cql);
+        }
+
+        private static IEnumerable<dynamic> ReadRecordsFromFile()
+        {
+            Logger.Info("Reading data from file...");
+
+            var reader = new StreamReader(Config.FilePath);
+            var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
+
+            ConfigureCsvReader(csvReader);
+
+            return csvReader.GetRecords<dynamic>();
+        }
+
         private static void ProcessRecords(IList<CColumn> columns, PreparedStatement pStatement, IEnumerable<dynamic> records)
         {
             var insertStatements = new List<BoundStatement>();
@@ -225,28 +247,6 @@ namespace migration_pair
                 ExecuteInsertAsync(insertStatements).Wait();
         }
 
-        private static IEnumerable<dynamic> ReadRecordsFromFile()
-        {
-            Logger.Info("Reading data from file...");
-
-            var reader = new StreamReader(Config.FilePath);
-            var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
-
-            ConfigureCsvReader(csvReader);
-
-            return csvReader.GetRecords<dynamic>();
-        }
-
-        private static PreparedStatement PrepareStatementForInsertion(IList<CColumn> columns)
-        {
-            string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
-            string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
-
-            string cql = $"INSERT INTO {Config.TargetKeyspace}.{Config.TargetTable} ({columnsAsString}) VALUES ({valuesPlaceholders})";
-
-            return _targetSession.Prepare(cql);
-        }
-
         private static dynamic[] PrepareRowForInsertion(IList<CColumn> columns, List<string> row)
         {
             dynamic[] preparedRow = new dynamic[row.Count];
@@ -257,36 +257,6 @@ namespace migration_pair
             }
 
             return preparedRow;
-        }
-
-        private static IList<string[]> ReadFromFile(string filePath)
-        {
-            Logger.Info("Reading data from file...");
-
-            if (!File.Exists(filePath))
-                throw new FileNotFoundException("The file either does not exist or there is a lack of permissions to read it. Check the path provided.");
-
-            var tableData = new List<string[]>();
-
-            using (TextReader reader = new StreamReader(filePath))
-            using (var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture))
-            {
-                ConfigureCsvReader(csvReader);
-
-                var records = csvReader.GetRecords<dynamic>();
-
-                foreach (IDictionary<string, object> record in records)
-                {
-                    var row = new List<string>(record.Values.Count);
-                    row.AddRange(record.Values.Cast<string>());
-
-                    tableData.Add(row.ToArray());
-                }
-            }
-
-            Logger.Info($"Rows retrieved: {tableData.Count}");
-
-            return tableData;
         }
 
         private static void ConfigureCsvReader(CsvReader csvReader)
