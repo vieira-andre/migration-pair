@@ -196,11 +196,16 @@ namespace migration_pair
                     BoundStatement bStatement = pStatement.Bind(preparedRow);
 
                     insertStatements.Add(bStatement);
+
+                    if (insertStatements.Count >= 10000)
+                    {
+                        ExecuteInsertAsync(insertStatements).Wait();
+                        insertStatements.Clear();
+                    }
                 }
 
-                Logger.Info("Inserting data into target table...");
-
-                ExecuteInsertAsync(insertStatements).Wait();
+                if (insertStatements.Count > 0)
+                    ExecuteInsertAsync(insertStatements).Wait();
             }
             catch (AggregateException aggEx)
             {
@@ -301,6 +306,8 @@ namespace migration_pair
 
         private static async Task ExecuteInsertAsync(IList<BoundStatement> insertStatements)
         {
+            Logger.Info($"Inserting {insertStatements.Count} records into table...");
+
             var tasks = new ConcurrentQueue<Task>();
 
             var stopwatch = new Stopwatch();
