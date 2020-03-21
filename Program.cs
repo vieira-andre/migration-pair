@@ -194,6 +194,7 @@ namespace migration_pair
                     dynamic[] preparedRow = PrepareRowForInsertion(columns, row);
 
                     BoundStatement bStatement = pStatement.Bind(preparedRow);
+
                     insertStatements.Add(bStatement);
                 }
 
@@ -216,6 +217,18 @@ namespace migration_pair
             }
         }
 
+        private static IEnumerable<dynamic> ReadRecordsFromFile()
+        {
+            Logger.Info("Reading data from file...");
+
+            var reader = new StreamReader(Config.FilePath);
+            var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
+
+            ConfigureCsvReader(csvReader);
+
+            return csvReader.GetRecords<dynamic>();
+        }
+
         private static PreparedStatement PrepareStatementForInsertion(IList<CColumn> columns)
         {
             string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
@@ -224,18 +237,6 @@ namespace migration_pair
             string cql = $"INSERT INTO {Config.TargetKeyspace}.{Config.TargetTable} ({columnsAsString}) VALUES ({valuesPlaceholders})";
 
             return _targetSession.Prepare(cql);
-        }
-
-        private static IEnumerable<dynamic> ReadRecordsFromFile()
-        {
-            Logger.Info("Reading data from file...");
-
-            using var reader = new StreamReader(Config.FilePath);
-            using var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
-            
-            ConfigureCsvReader(csvReader);
-
-            return csvReader.GetRecords<dynamic>();
         }
 
         private static dynamic[] PrepareRowForInsertion(IList<CColumn> columns, List<string> row)
