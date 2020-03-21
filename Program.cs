@@ -179,33 +179,10 @@ namespace migration_pair
                     throw new FileNotFoundException("The file either does not exist or there is a lack of permissions to read it. Check the path provided.");
 
                 IList<CColumn> columns = GetColumnsInfo(Config.TargetKeyspace, Config.TargetTable);
-
-                IEnumerable<dynamic> records = ReadRecordsFromFile();
-
                 PreparedStatement pStatement = PrepareStatementForInsertion(columns);
 
-                var insertStatements = new List<BoundStatement>();
-
-                foreach (IDictionary<string, object> record in records)
-                {
-                    var row = new List<string>(record.Values.Count);
-                    row.AddRange(record.Values.Cast<string>());
-
-                    dynamic[] preparedRow = PrepareRowForInsertion(columns, row);
-
-                    BoundStatement bStatement = pStatement.Bind(preparedRow);
-
-                    insertStatements.Add(bStatement);
-
-                    if (insertStatements.Count >= 10000)
-                    {
-                        ExecuteInsertAsync(insertStatements).Wait();
-                        insertStatements.Clear();
-                    }
-                }
-
-                if (insertStatements.Count > 0)
-                    ExecuteInsertAsync(insertStatements).Wait();
+                IEnumerable<dynamic> records = ReadRecordsFromFile();
+                ProcessRecords(columns, pStatement, records);
             }
             catch (AggregateException aggEx)
             {
@@ -220,6 +197,32 @@ namespace migration_pair
             {
                 DisposeTargetSessionAndCluster();
             }
+        }
+
+        private static void ProcessRecords(IList<CColumn> columns, PreparedStatement pStatement, IEnumerable<dynamic> records)
+        {
+            var insertStatements = new List<BoundStatement>();
+
+            foreach (IDictionary<string, object> record in records)
+            {
+                var row = new List<string>(record.Values.Count);
+                row.AddRange(record.Values.Cast<string>());
+
+                dynamic[] preparedRow = PrepareRowForInsertion(columns, row);
+
+                BoundStatement bStatement = pStatement.Bind(preparedRow);
+
+                insertStatements.Add(bStatement);
+
+                if (insertStatements.Count >= 10000)
+                {
+                    ExecuteInsertAsync(insertStatements).Wait();
+                    insertStatements.Clear();
+                }
+            }
+
+            if (insertStatements.Count > 0)
+                ExecuteInsertAsync(insertStatements).Wait();
         }
 
         private static IEnumerable<dynamic> ReadRecordsFromFile()
