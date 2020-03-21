@@ -214,7 +214,7 @@ namespace migration_pair
 
                 insertStatements.Add(bStatement);
 
-                if (insertStatements.Count >= 10000)
+                if (insertStatements.Count >= 100000)
                 {
                     ExecuteInsertAsync(insertStatements).Wait();
                     insertStatements.Clear();
