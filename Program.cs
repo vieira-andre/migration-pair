@@ -92,11 +92,15 @@ namespace migration_pair
 
             try
             {
+                var stopwatch = StopwatchManager.Start();
+
                 BuildSourceClusterAndSession();
 
                 RowSet rows = RetrieveRowsFromTable();
 
                 ProcessRows(rows);
+
+                stopwatch.StopAndLog();
             }
             catch (AggregateException aggEx)
             {
@@ -173,6 +177,8 @@ namespace migration_pair
 
             try
             {
+                var stopwatch = StopwatchManager.Start();
+
                 BuildTargetClusterAndSession();
 
                 if (!File.Exists(Config.FilePath))
@@ -183,6 +189,8 @@ namespace migration_pair
 
                 IEnumerable<dynamic> records = ReadRecordsFromFile();
                 ProcessRecords(columns, pStatement, records);
+
+                stopwatch.StopAndLog();
             }
             catch (AggregateException aggEx)
             {
@@ -281,12 +289,11 @@ namespace migration_pair
 
         private static async Task ExecuteInsertAsync(IList<BoundStatement> insertStatements)
         {
+            var stopwatch = StopwatchManager.Start();
+
             Logger.Info($"Inserting {insertStatements.Count} records into table...");
 
             var tasks = new ConcurrentQueue<Task>();
-
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
 
             foreach (var stmt in insertStatements)
             {
@@ -301,8 +308,7 @@ namespace migration_pair
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
 
-            stopwatch.Stop();
-            Logger.Info($"Elapsed insertion time: {stopwatch.ElapsedMilliseconds} ms");
+            stopwatch.StopAndLog();
         }
 
         private static bool IsRequestsLimitReached()
