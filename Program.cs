@@ -33,8 +33,8 @@ namespace migration_pair
         {
             return task switch
             {
-                TaskToPerform.Extract => new Extraction(),
-                TaskToPerform.Insert => new Insertion(),
+                TaskToPerform.Extraction => new Extraction(),
+                TaskToPerform.Insertion => new Insertion(),
                 TaskToPerform.EndToEnd => new EndToEnd(),
                 _ => throw new ArgumentException("Invalid value for migration task.")
             };
