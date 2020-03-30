@@ -346,6 +346,31 @@ namespace migration_pair
             DisposeTargetSessionAndCluster();
         }
 
+        private static void ProcessRows(RowSet rows, PreparedStatement pStatement)
+        {
+            var insertStatements = new List<BoundStatement>();
+
+            foreach (Row row in rows)
+            {
+                var rowFields = new dynamic[row.Length];
+
+                for (int i = 0; i < row.Length; i++)
+                    rowFields[i] = row[i];
+
+                BoundStatement bStatement = pStatement.Bind(rowFields);
+                insertStatements.Add(bStatement);
+
+                if (insertStatements.Count >= 100000)
+                {
+                    ExecuteInsertAsync(insertStatements).Wait();
+                    insertStatements.Clear();
+                }
+            }
+
+            if (insertStatements.Count > 0)
+                ExecuteInsertAsync(insertStatements).Wait();
+        }
+
         private static bool IsThereCompliance()
         {
             IList<CColumn> sourceColumns = GetColumnsInfo(Config.SourceKeyspace, Config.SourceTable);
