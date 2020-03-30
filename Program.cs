@@ -331,8 +331,12 @@ namespace migration_pair
 
         private static void EndToEnd()
         {
+            Logger.Info("Starting end-to-end migration...");
+
             try
             {
+                var stopwatch = StopwatchManager.Start();
+
                 BuildSourceClusterAndSession();
                 BuildTargetClusterAndSession();
 
@@ -343,6 +347,8 @@ namespace migration_pair
 
                 RowSet rows = RetrieveRowsFromTable();
                 ProcessRows(rows, pStatement);
+
+                stopwatch.StopAndLog();
             }
             catch (AggregateException aggEx)
             {
