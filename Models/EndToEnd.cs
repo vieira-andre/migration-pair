@@ -98,7 +98,7 @@ namespace migration_pair.Models
                 BoundStatement bStatement = pStatement.Bind(rowFields);
                 insertStatements.Add(bStatement);
 
-                if (insertStatements.Count >= 100000)
+                if (insertStatements.Count >= Config.InsertionBatch)
                 {
                     ExecuteInsertAsync(insertStatements).Wait();
                     insertStatements.Clear();

@@ -80,7 +80,7 @@ namespace migration_pair.Models
 
                 insertStatements.Add(bStatement);
 
-                if (insertStatements.Count >= 100000)
+                if (insertStatements.Count >= Config.InsertionBatch)
                 {
                     ExecuteInsertAsync(insertStatements).Wait();
                     insertStatements.Clear();
