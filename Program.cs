@@ -207,8 +207,10 @@ namespace migration_pair
             }
         }
 
-        private static PreparedStatement PrepareStatementForInsertion(IList<CColumn> columns)
+        private static PreparedStatement PrepareStatementForInsertion(IList<CColumn> columns = null)
         {
+            columns ??= GetColumnsInfo(Config.TargetKeyspace, Config.TargetTable);
+
             string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
             string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
 
