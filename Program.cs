@@ -331,19 +331,33 @@ namespace migration_pair
 
         private static void EndToEnd()
         {
-            BuildSourceClusterAndSession();
-            BuildTargetClusterAndSession();
+            try
+            {
+                BuildSourceClusterAndSession();
+                BuildTargetClusterAndSession();
 
-            if (!IsThereCompliance())
-                return;
+                if (!IsThereCompliance())
+                    return;
 
-            PreparedStatement pStatement = PrepareStatementForInsertion();
+                PreparedStatement pStatement = PrepareStatementForInsertion();
 
-            RowSet rows = RetrieveRowsFromTable();
-            ProcessRows(rows, pStatement);
-
-            DisposeSourceSessionAndCluster();
-            DisposeTargetSessionAndCluster();
+                RowSet rows = RetrieveRowsFromTable();
+                ProcessRows(rows, pStatement);
+            }
+            catch (AggregateException aggEx)
+            {
+                foreach (Exception ex in aggEx.Flatten().InnerExceptions)
+                    Logger.Error(ex);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex);
+            }
+            finally
+            {
+                DisposeSourceSessionAndCluster();
+                DisposeTargetSessionAndCluster();
+            }
         }
 
         private static void ProcessRows(RowSet rows, PreparedStatement pStatement)
