@@ -13,10 +13,7 @@ namespace migration_pair
         {
             try
             {
-                if (!Enum.TryParse(Config.TaskToPerform.Value, true, out TaskToPerform task))
-                    Logger.Error($"Config entry {Config.TaskToPerform.Path} is either unspecified or misspecified.");
-
-                var migrationTask = GetMigrationTaskInstance(task);
+                var migrationTask = GetMigrationTaskInstance();
                 migrationTask.Execute();
             }
             catch (Exception ex)
@@ -29,14 +26,16 @@ namespace migration_pair
             }
         }
 
-        private static MigrationTask GetMigrationTaskInstance(TaskToPerform task)
+        private static MigrationTask GetMigrationTaskInstance()
         {
+            _ = Enum.TryParse(Config.TaskToPerform.Value, true, out TaskToPerform task);
+
             return task switch
             {
                 TaskToPerform.Extraction => new Extraction(),
                 TaskToPerform.Insertion => new Insertion(),
                 TaskToPerform.EndToEnd => new EndToEnd(),
-                _ => throw new ArgumentException("Invalid value for migration task.")
+                _ => throw new ArgumentException($"Config {Config.TaskToPerform.Path} is either unspecified or misspecified.")
             };
         }
     }
