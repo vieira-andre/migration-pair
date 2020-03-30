@@ -7,7 +7,6 @@ using NLog;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -335,11 +334,13 @@ namespace migration_pair
             BuildSourceClusterAndSession();
             BuildTargetClusterAndSession();
 
-            if (IsThereCompliance())
-            {
-                ExtractionPhase();
-                InsertionPhase();
-            }
+            if (!IsThereCompliance())
+                return;
+
+            PreparedStatement pStatement = PrepareStatementForInsertion();
+
+            RowSet rows = RetrieveRowsFromTable();
+            ProcessRows(rows, pStatement);
 
             DisposeSourceSessionAndCluster();
             DisposeTargetSessionAndCluster();
