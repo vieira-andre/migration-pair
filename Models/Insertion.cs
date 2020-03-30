@@ -28,11 +28,8 @@ namespace migration_pair.Models
                 if (!File.Exists(Config.FilePath))
                     throw new FileNotFoundException("The file either does not exist or there is a lack of permissions to read it. Check the path provided.");
 
-                IList<CColumn> columns = GetColumnsInfo(Config.TargetKeyspace, Config.TargetTable);
-                PreparedStatement pStatement = PrepareStatementForInsertion(columns);
-
                 IEnumerable<dynamic> records = ReadRecordsFromFile();
-                ProcessRecords(columns, pStatement, records);
+                ProcessRecords(records);
 
                 stopwatch.StopAndLog();
             }
@@ -63,9 +60,12 @@ namespace migration_pair.Models
             return csvReader.GetRecords<dynamic>();
         }
 
-        private static void ProcessRecords(IList<CColumn> columns, PreparedStatement pStatement, IEnumerable<dynamic> records)
+        private static void ProcessRecords(IEnumerable<dynamic> records)
         {
             Logger.Info("Processing records...");
+
+            IList<CColumn> columns = GetColumnsInfo(Config.TargetKeyspace, Config.TargetTable);
+            PreparedStatement pStatement = PrepareStatementForInsertion(columns);
 
             var insertStatements = new List<BoundStatement>();
 

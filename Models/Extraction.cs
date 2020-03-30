@@ -24,7 +24,6 @@ namespace migration_pair.Models
                 BuildSourceClusterAndSession();
 
                 RowSet rows = RetrieveRowsFromTable();
-
                 ProcessRows(rows);
 
                 stopwatch.StopAndLog();

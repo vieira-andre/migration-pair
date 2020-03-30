@@ -25,10 +25,8 @@ namespace migration_pair.Models
                 if (!IsThereCompliance())
                     return;
 
-                PreparedStatement pStatement = PrepareStatementForInsertion();
-
                 RowSet rows = RetrieveRowsFromTable();
-                ProcessRows(rows, pStatement);
+                ProcessRows(rows);
 
                 stopwatch.StopAndLog();
             }
@@ -84,8 +82,9 @@ namespace migration_pair.Models
             return false;
         }
 
-        private static void ProcessRows(RowSet rows, PreparedStatement pStatement)
+        private static void ProcessRows(RowSet rows)
         {
+            PreparedStatement pStatement = PrepareStatementForInsertion();
             var insertStatements = new List<BoundStatement>();
 
             foreach (Row row in rows)
