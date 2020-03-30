@@ -3,8 +3,8 @@
     internal enum TaskToPerform
     {
         None,
-        Extract,
-        Insert,
-        ExtractAndInsert
+        Extraction,
+        Insertion,
+        EndToEnd
     }
 }

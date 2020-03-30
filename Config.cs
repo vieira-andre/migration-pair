@@ -6,7 +6,6 @@ namespace migration_pair
     public static class Config
     {
         public static IConfigurationSection TaskToPerform => Configuration.GetSection("TaskToPerform");
-        public static string FilePath => Configuration.GetSection("FilePath").Value;
         public static string[] SourceEndPoints => Configuration.GetSection("SourceEndpoints").Value.Split(',');
         public static int SourcePort => int.TryParse(Configuration.GetSection("SourcePort").Value, out int sourcePort) ? sourcePort : Cassandra.ProtocolOptions.DefaultPort;
         public static string SourceKeyspace => Configuration.GetSection("SourceKeyspace").Value;
@@ -15,6 +14,8 @@ namespace migration_pair
         public static int TargetPort => int.TryParse(Configuration.GetSection("TargetPort").Value, out int targetPort) ? targetPort : Cassandra.ProtocolOptions.DefaultPort;
         public static string TargetKeyspace => Configuration.GetSection("TargetKeyspace").Value;
         public static string TargetTable => Configuration.GetSection("TargetTable").Value;
+        public static string FilePath => Configuration.GetSection("FilePath").Value;
+        public static int InsertionBatch => int.TryParse(Configuration.GetSection("InsertionBatch").Value, out int insertionBatch) ? insertionBatch : 100000;
 
         private static readonly IConfigurationRoot Configuration = new ConfigurationBuilder()
                                                                         .SetBasePath(Directory.GetCurrentDirectory())
