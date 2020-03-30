@@ -40,8 +40,8 @@ namespace migration_pair
                     InsertionPhase();
                     break;
 
-                case TaskToPerform.ExtractAndInsert:
-                    ExtractAndInsert();
+                case TaskToPerform.EndToEnd:
+                    EndToEnd();
                     break;
 
                 default:
@@ -328,7 +328,7 @@ namespace migration_pair
             return _targetSession.Cluster.Configuration.PoolingOptions.GetMaxRequestsPerConnection();
         }
 
-        private static void ExtractAndInsert()
+        private static void EndToEnd()
         {
             BuildSourceClusterAndSession();
             BuildTargetClusterAndSession();

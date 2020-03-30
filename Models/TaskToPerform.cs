@@ -5,6 +5,6 @@
         None,
         Extract,
         Insert,
-        ExtractAndInsert
+        EndToEnd
     }
 }
