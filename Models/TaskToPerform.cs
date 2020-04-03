@@ -1,4 +1,4 @@
-﻿namespace migration_pair.Models
+﻿namespace Mycenae.Models
 {
     internal enum TaskToPerform
     {

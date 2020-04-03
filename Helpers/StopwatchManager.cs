@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
-namespace migration_pair.Helpers
+namespace Mycenae.Helpers
 {
     internal static class StopwatchManager
     {

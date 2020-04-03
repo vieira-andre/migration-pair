@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using System.IO;
 
-namespace migration_pair
+namespace Mycenae
 {
     public static class Config
     {

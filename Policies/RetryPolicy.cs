@@ -1,7 +1,7 @@
 ﻿using Cassandra;
 using System.Threading.Tasks;
 
-namespace migration_pair.Policies
+namespace Mycenae.Policies
 {
     internal class RetryPolicy : IRetryPolicy
     {

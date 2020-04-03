@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace migration_pair.Models
+namespace Mycenae.Models
 {
     internal class CColumn
     {

@@ -1,5 +1,5 @@
 ﻿using Cassandra;
-using migration_pair.Helpers;
+using Mycenae.Helpers;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using Logger = NLog.Logger;
 
-namespace migration_pair.Models
+namespace Mycenae.Models
 {
     internal class Extraction : MigrationTask
     {

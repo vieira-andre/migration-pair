@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace migration_pair.Helpers
+namespace Mycenae.Helpers
 {
     internal static class DynamicTypeConverter
     {

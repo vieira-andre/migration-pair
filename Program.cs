@@ -1,9 +1,9 @@
-﻿using migration_pair.Models;
+﻿using Mycenae.Models;
 using NLog;
 using System;
 using Logger = NLog.Logger;
 
-namespace migration_pair
+namespace Mycenae
 {
     public class Program
     {
