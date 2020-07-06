@@ -106,7 +106,7 @@ namespace Mycenae.Models
         private static void ConfigureCsvReader(CsvReader csvReader)
         {
             csvReader.Configuration.Delimiter = ",";
-            csvReader.Configuration.HasHeaderRecord = true;
+            csvReader.Configuration.HasHeaderRecord = Config.InsertionFileHasHeader;
             csvReader.Configuration.MissingFieldFound = null;
         }
     }
