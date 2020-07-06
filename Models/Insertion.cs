@@ -25,7 +25,7 @@ namespace Mycenae.Models
 
                 BuildTargetClusterAndSession();
 
-                if (!File.Exists(Config.FilePath))
+                if (!File.Exists(Config.InsertionFilePath))
                     throw new FileNotFoundException("The file either does not exist or there is a lack of permissions to read it. Check the path provided.");
 
                 IEnumerable<dynamic> records = ReadRecordsFromFile();
@@ -52,7 +52,7 @@ namespace Mycenae.Models
         {
             Logger.Info("Reading data from file...");
 
-            var reader = new StreamReader(Config.FilePath);
+            var reader = new StreamReader(Config.InsertionFilePath);
             var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
 
             ConfigureCsvReader(csvReader);

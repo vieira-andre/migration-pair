@@ -47,8 +47,8 @@ namespace Mycenae.Models
         {
             Logger.Info("Processing rows...");
 
-            _ = Directory.CreateDirectory(Path.GetDirectoryName(Config.FilePath));
-            using var fileWriter = new StreamWriter(Config.FilePath);
+            _ = Directory.CreateDirectory(Path.GetDirectoryName(Config.ExtractionFilePath));
+            using var fileWriter = new StreamWriter(Config.ExtractionFilePath);
 
             string columnNames = string.Join(',', rows.Columns.Select(c => c.Name));
             fileWriter.WriteLine(columnNames);

@@ -14,7 +14,8 @@ namespace Mycenae
         public static int TargetPort => int.TryParse(Configuration.GetSection("TargetPort").Value, out int targetPort) ? targetPort : Cassandra.ProtocolOptions.DefaultPort;
         public static string TargetKeyspace => Configuration.GetSection("TargetKeyspace").Value;
         public static string TargetTable => Configuration.GetSection("TargetTable").Value;
-        public static string FilePath => Configuration.GetSection("FilePath").Value;
+        public static string InsertionFilePath => Configuration.GetSection("InsertionFilePath").Value;
+        public static string ExtractionFilePath => Configuration.GetSection("ExtractionFilePath").Value;
         public static int InsertionBatch => int.TryParse(Configuration.GetSection("InsertionBatch").Value, out int insertionBatch) ? insertionBatch : 100000;
 
         private static readonly IConfigurationRoot Configuration = new ConfigurationBuilder()
