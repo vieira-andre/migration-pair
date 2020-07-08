@@ -25,7 +25,7 @@ namespace Mycenae.Models
 
                 BuildTargetClusterAndSession();
 
-                if (!File.Exists(Config.InsertionFilePath))
+                if (!File.Exists(Config.Values.Files.Insertion.Path))
                     throw new FileNotFoundException("The file either does not exist or there is a lack of permissions to read it. Check the path provided.");
 
                 IEnumerable<dynamic> records = ReadRecordsFromFile();
@@ -52,7 +52,7 @@ namespace Mycenae.Models
         {
             Logger.Info("Reading data from file...");
 
-            var reader = new StreamReader(Config.InsertionFilePath);
+            var reader = new StreamReader(Config.Values.Files.Insertion.Path);
             var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
 
             ConfigureCsvReader(csvReader);
@@ -64,7 +64,7 @@ namespace Mycenae.Models
         {
             Logger.Info("Processing records...");
 
-            IList<CColumn> columns = GetColumnsInfo(Config.TargetKeyspace, Config.TargetTable);
+            IList<CColumn> columns = GetColumnsInfo(Config.Values.Connections.Target.Keyspace, Config.Values.Connections.Target.Table);
             PreparedStatement pStatement = PrepareStatementForInsertion(columns);
 
             var insertStatements = new List<BoundStatement>();
@@ -80,7 +80,7 @@ namespace Mycenae.Models
 
                 insertStatements.Add(bStatement);
 
-                if (insertStatements.Count >= Config.InsertionBatch)
+                if (insertStatements.Count >= Config.Values.InsertionBatch)
                 {
                     ExecuteInsertAsync(insertStatements).Wait();
                     insertStatements.Clear();
@@ -106,7 +106,7 @@ namespace Mycenae.Models
         private static void ConfigureCsvReader(CsvReader csvReader)
         {
             csvReader.Configuration.Delimiter = ",";
-            csvReader.Configuration.HasHeaderRecord = Config.InsertionFileHasHeader;
+            csvReader.Configuration.HasHeaderRecord = Config.Values.Files.Insertion.HasHeader;
             csvReader.Configuration.MissingFieldFound = null;
         }
     }

@@ -29,8 +29,8 @@ namespace Mycenae.Models
             Logger.Info("Building source cluster and connecting session...");
 
             _sourceCluster = Cluster.Builder()
-                .WithPort(Config.SourcePort)
-                .AddContactPoints(Config.SourceEndPoints)
+                .WithPort(Config.Values.Connections.Source.Port)
+                .AddContactPoints(Config.Values.Connections.Source.Endpoints)
                 .Build();
 
             _sourceSession = _sourceCluster.Connect();
@@ -44,11 +44,11 @@ namespace Mycenae.Models
             Logger.Info("Building target cluster and connecting session...");
 
             _targetCluster = Cluster.Builder()
-                .WithPort(Config.TargetPort)
+                .WithPort(Config.Values.Connections.Target.Port)
                 .WithRetryPolicy(new RetryPolicy())
                 .WithPoolingOptions(PoolingOptions.Create())
                 .WithSocketOptions(new SocketOptions().SetReadTimeoutMillis(0))
-                .AddContactPoints(Config.TargetEndPoints)
+                .AddContactPoints(Config.Values.Connections.Target.Endpoints)
                 .Build();
 
             _targetSession = _targetCluster.Connect();
@@ -80,7 +80,7 @@ namespace Mycenae.Models
         {
             Logger.Info("Retrieving rows from table...");
 
-            string cql = $"SELECT * FROM {Config.SourceKeyspace}.{Config.SourceTable}";
+            string cql = $"SELECT * FROM {Config.Values.Connections.Source.Keyspace}.{Config.Values.Connections.Source.Table}";
             var statement = new SimpleStatement(cql);
 
             return _sourceSession.Execute(statement);
@@ -88,12 +88,13 @@ namespace Mycenae.Models
 
         protected static PreparedStatement PrepareStatementForInsertion(IList<CColumn> columns = null)
         {
-            columns ??= GetColumnsInfo(Config.TargetKeyspace, Config.TargetTable);
+            columns ??= GetColumnsInfo(Config.Values.Connections.Target.Keyspace, Config.Values.Connections.Target.Table);
 
             string columnsAsString = string.Join(',', columns.GroupBy(c => c.Name).Select(c => c.Key));
             string valuesPlaceholders = string.Concat(Enumerable.Repeat("?,", columns.Count)).TrimEnd(',');
 
-            string cql = $"INSERT INTO {Config.TargetKeyspace}.{Config.TargetTable} ({columnsAsString}) VALUES ({valuesPlaceholders})";
+            string cql = $"INSERT INTO {Config.Values.Connections.Target.Keyspace}.{Config.Values.Connections.Target.Table} " +
+                         $"({columnsAsString}) VALUES ({valuesPlaceholders})";
 
             return _targetSession.Prepare(cql);
         }

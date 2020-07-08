@@ -28,14 +28,12 @@ namespace Mycenae
 
         private static MigrationTask GetMigrationTaskInstance()
         {
-            _ = Enum.TryParse(Config.TaskToPerform.Value, true, out TaskToPerform task);
-
-            return task switch
+            return Config.Values.TaskToPerform switch
             {
                 TaskToPerform.Extraction => new Extraction(),
                 TaskToPerform.Insertion => new Insertion(),
                 TaskToPerform.EndToEnd => new EndToEnd(),
-                _ => throw new ArgumentException($"Config {Config.TaskToPerform.Path} is either unspecified or misspecified.")
+                _ => throw new ArgumentException($"Config TaskToPerform is not properly specified.")
             };
         }
     }

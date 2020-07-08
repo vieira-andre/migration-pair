@@ -48,8 +48,8 @@ namespace Mycenae.Models
 
         private static bool IsThereCompliance()
         {
-            IList<CColumn> sourceColumns = GetColumnsInfo(Config.SourceKeyspace, Config.SourceTable);
-            IList<CColumn> targetColumns = GetColumnsInfo(Config.TargetKeyspace, Config.TargetTable);
+            IList<CColumn> sourceColumns = GetColumnsInfo(Config.Values.Connections.Source.Keyspace, Config.Values.Connections.Source.Table);
+            IList<CColumn> targetColumns = GetColumnsInfo(Config.Values.Connections.Target.Keyspace, Config.Values.Connections.Target.Table);
 
             if (sourceColumns.Count != targetColumns.Count)
             {
@@ -97,7 +97,7 @@ namespace Mycenae.Models
                 BoundStatement bStatement = pStatement.Bind(rowFields);
                 insertStatements.Add(bStatement);
 
-                if (insertStatements.Count >= Config.InsertionBatch)
+                if (insertStatements.Count >= Config.Values.InsertionBatch)
                 {
                     ExecuteInsertAsync(insertStatements).Wait();
                     insertStatements.Clear();
