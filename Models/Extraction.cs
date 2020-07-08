@@ -50,8 +50,11 @@ namespace Mycenae.Models
             _ = Directory.CreateDirectory(Path.GetDirectoryName(Config.Values.Files.Extraction.Path));
             using var fileWriter = new StreamWriter(Config.Values.Files.Extraction.Path);
 
-            string columnNames = string.Join(',', rows.Columns.Select(c => c.Name));
-            fileWriter.WriteLine(columnNames);
+            if (Config.Values.Files.Extraction.HasHeader)
+            {
+                string columnNames = string.Join(',', rows.Columns.Select(c => c.Name));
+                fileWriter.WriteLine(columnNames);
+            }
 
             foreach (Row row in rows)
             {
