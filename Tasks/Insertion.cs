@@ -1,6 +1,7 @@
 ﻿using Cassandra;
 using CsvHelper;
 using Mycenae.Helpers;
+using Mycenae.Models;
 using NLog;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.IO;
 using System.Linq;
 using Logger = NLog.Logger;
 
-namespace Mycenae.Models
+namespace Mycenae.Tasks
 {
     internal class Insertion : MigrationTask
     {

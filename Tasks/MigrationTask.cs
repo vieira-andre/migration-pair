@@ -1,5 +1,6 @@
 ﻿using Cassandra;
 using Mycenae.Helpers;
+using Mycenae.Models;
 using Mycenae.Policies;
 using NLog;
 using System.Collections.Concurrent;
@@ -8,7 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Logger = NLog.Logger;
 
-namespace Mycenae.Models
+namespace Mycenae.Tasks
 {
     internal abstract class MigrationTask
     {

@@ -1,11 +1,12 @@
 ﻿using Cassandra;
 using Mycenae.Helpers;
+using Mycenae.Models;
 using NLog;
 using System;
 using System.Collections.Generic;
 using Logger = NLog.Logger;
 
-namespace Mycenae.Models
+namespace Mycenae.Tasks
 {
     internal class EndToEnd : MigrationTask
     {
