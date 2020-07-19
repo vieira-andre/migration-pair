@@ -36,5 +36,6 @@
     {
         public string Path { get; set; }
         public bool HasHeader { get; set; }
+        public string Delimiter { get; set; } = ",";
     }
 }

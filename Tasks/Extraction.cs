@@ -50,7 +50,7 @@ namespace Mycenae.Tasks
 
             if (Settings.Values.Files.Extraction.HasHeader)
             {
-                string columnNames = string.Join(',', rows.Columns.Select(c => c.Name));
+                string columnNames = string.Join(Settings.Values.Files.Extraction.Delimiter, rows.Columns.Select(c => c.Name));
                 fileWriter.WriteLine(columnNames);
             }
 

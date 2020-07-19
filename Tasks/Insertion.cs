@@ -104,7 +104,7 @@ namespace Mycenae.Tasks
 
         private static void ConfigureCsvReader(CsvReader csvReader)
         {
-            csvReader.Configuration.Delimiter = ",";
+            csvReader.Configuration.Delimiter = Settings.Values.Files.Insertion.Delimiter;
             csvReader.Configuration.HasHeaderRecord = Settings.Values.Files.Insertion.HasHeader;
             csvReader.Configuration.MissingFieldFound = null;
         }
