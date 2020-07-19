@@ -28,7 +28,8 @@ namespace Mycenae.Tasks
 
             Logger.Info("Building source cluster and connecting session...");
 
-            _sourceCluster = Cluster.Builder()
+            _sourceCluster = 
+                Cluster.Builder()
                 .WithPort(Settings.Values.Connections.Source.Port)
                 .AddContactPoints(Settings.Values.Connections.Source.Endpoints)
                 .Build();
@@ -43,7 +44,8 @@ namespace Mycenae.Tasks
 
             Logger.Info("Building target cluster and connecting session...");
 
-            _targetCluster = Cluster.Builder()
+            _targetCluster = 
+                Cluster.Builder()
                 .WithPort(Settings.Values.Connections.Target.Port)
                 .WithRetryPolicy(new RetryPolicy())
                 .WithPoolingOptions(PoolingOptions.Create())

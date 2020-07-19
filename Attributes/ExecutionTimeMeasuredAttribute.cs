@@ -29,7 +29,8 @@ namespace Mycenae.Attributes
         {
             _stopwatch.Stop();
 
-            _logger.Info($"Time elapsed: {_stopwatch.Elapsed.Hours}h:{_stopwatch.Elapsed.Minutes}m:{_stopwatch.Elapsed.Seconds}s:{_stopwatch.Elapsed.Milliseconds}ms");
+            _logger.Info($"Time elapsed: {_stopwatch.Elapsed.Hours}h:{_stopwatch.Elapsed.Minutes}m:" +
+                $"{_stopwatch.Elapsed.Seconds}s:{_stopwatch.Elapsed.Milliseconds}ms");
         }
     }
 }
