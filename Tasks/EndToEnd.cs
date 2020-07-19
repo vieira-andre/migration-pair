@@ -46,8 +46,8 @@ namespace Mycenae.Tasks
 
         private static bool IsThereCompliance()
         {
-            IList<CColumn> sourceColumns = GetColumnsInfo(Config.Values.Connections.Source.Keyspace, Config.Values.Connections.Source.Table);
-            IList<CColumn> targetColumns = GetColumnsInfo(Config.Values.Connections.Target.Keyspace, Config.Values.Connections.Target.Table);
+            IList<CColumn> sourceColumns = GetColumnsInfo(Settings.Values.Connections.Source.Keyspace, Settings.Values.Connections.Source.Table);
+            IList<CColumn> targetColumns = GetColumnsInfo(Settings.Values.Connections.Target.Keyspace, Settings.Values.Connections.Target.Table);
 
             if (sourceColumns.Count != targetColumns.Count)
             {
@@ -95,7 +95,7 @@ namespace Mycenae.Tasks
                 BoundStatement bStatement = pStatement.Bind(rowFields);
                 insertStatements.Add(bStatement);
 
-                if (insertStatements.Count >= Config.Values.InsertionBatch)
+                if (insertStatements.Count >= Settings.Values.InsertionBatch)
                 {
                     ExecuteInsertAsync(insertStatements).Wait();
                     insertStatements.Clear();

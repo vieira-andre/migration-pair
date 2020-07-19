@@ -45,10 +45,10 @@ namespace Mycenae.Tasks
         {
             Logger.Info("Processing rows...");
 
-            _ = Directory.CreateDirectory(Path.GetDirectoryName(Config.Values.Files.Extraction.Path));
-            using var fileWriter = new StreamWriter(Config.Values.Files.Extraction.Path);
+            _ = Directory.CreateDirectory(Path.GetDirectoryName(Settings.Values.Files.Extraction.Path));
+            using var fileWriter = new StreamWriter(Settings.Values.Files.Extraction.Path);
 
-            if (Config.Values.Files.Extraction.HasHeader)
+            if (Settings.Values.Files.Extraction.HasHeader)
             {
                 string columnNames = string.Join(',', rows.Columns.Select(c => c.Name));
                 fileWriter.WriteLine(columnNames);

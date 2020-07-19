@@ -29,7 +29,7 @@ namespace Mycenae
 
         private static MigrationTask GetMigrationTaskInstance()
         {
-            return Config.Values.TaskToPerform switch
+            return Settings.Values.TaskToPerform switch
             {
                 TaskToPerform.Extraction => new Extraction(),
                 TaskToPerform.Insertion => new Insertion(),

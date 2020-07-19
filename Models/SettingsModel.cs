@@ -1,6 +1,6 @@
 ﻿namespace Mycenae.Models
 {
-    public class ConfigModel
+    public class SettingsModel
     {
         private int insertionBatch;
 
