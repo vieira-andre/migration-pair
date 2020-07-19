@@ -1,5 +1,4 @@
 ﻿using Cassandra;
-using Mycenae.Helpers;
 using Mycenae.Models;
 using Mycenae.Policies;
 using NLog;
@@ -113,8 +112,6 @@ namespace Mycenae.Tasks
 
         protected static async Task ExecuteInsertAsync(IList<BoundStatement> insertStatements)
         {
-            var stopwatch = StopwatchManager.Start();
-
             Logger.Info($"Inserting {insertStatements.Count} records into table...");
 
             var tasks = new ConcurrentQueue<Task>();
@@ -131,8 +128,6 @@ namespace Mycenae.Tasks
             }
 
             await Task.WhenAll(tasks).ConfigureAwait(false);
-
-            stopwatch.StopAndLog();
         }
 
         private static bool IsRequestsLimitReached()

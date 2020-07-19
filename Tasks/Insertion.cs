@@ -1,7 +1,6 @@
 ﻿using Cassandra;
 using CsvHelper;
 using Mycenae.Converters;
-using Mycenae.Helpers;
 using Mycenae.Models;
 using NLog;
 using System;
@@ -23,8 +22,6 @@ namespace Mycenae.Tasks
 
             try
             {
-                var stopwatch = StopwatchManager.Start();
-
                 BuildTargetClusterAndSession();
 
                 if (!File.Exists(Config.Values.Files.Insertion.Path))
@@ -32,8 +29,6 @@ namespace Mycenae.Tasks
 
                 IEnumerable<dynamic> records = ReadRecordsFromFile();
                 ProcessRecords(records);
-
-                stopwatch.StopAndLog();
             }
             catch (AggregateException aggEx)
             {

@@ -1,5 +1,4 @@
 ﻿using Cassandra;
-using Mycenae.Helpers;
 using Mycenae.Models;
 using NLog;
 using System;
@@ -20,14 +19,10 @@ namespace Mycenae.Tasks
 
             try
             {
-                var stopwatch = StopwatchManager.Start();
-
                 BuildSourceClusterAndSession();
 
                 RowSet rows = RetrieveRowsFromTable();
                 ProcessRows(rows);
-
-                stopwatch.StopAndLog();
             }
             catch (AggregateException aggEx)
             {
