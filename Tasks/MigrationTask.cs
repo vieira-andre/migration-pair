@@ -120,11 +120,8 @@ namespace Mycenae.Tasks
 
             foreach (var stmt in insertStatements)
             {
-                if (IsRequestsLimitReached())
-                {
-                    while (CurrentInFlightQueries() > MaxRequestsPerConnection() / 2)
-                        await Task.Delay(10);
-                }
+                while (IsRequestsLimitReached())
+                    await Task.Delay(10);
 
                 tasks.Enqueue(_targetSession.ExecuteAsync(stmt));
             }
