@@ -1,5 +1,6 @@
 ﻿using Cassandra;
 using CsvHelper;
+using Mycenae.Converters;
 using Mycenae.Helpers;
 using Mycenae.Models;
 using NLog;
