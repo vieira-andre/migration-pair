@@ -1,5 +1,4 @@
 ﻿using Cassandra;
-using Mycenae.Attributes;
 using Mycenae.Models;
 using NLog;
 using System;
@@ -12,7 +11,6 @@ namespace Mycenae.Tasks
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        [ExecutionTimeMeasured]
         internal override void Execute()
         {
             Logger.Info("Starting end-to-end migration...");

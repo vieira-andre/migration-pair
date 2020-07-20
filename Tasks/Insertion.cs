@@ -1,6 +1,5 @@
 ﻿using Cassandra;
 using CsvHelper;
-using Mycenae.Attributes;
 using Mycenae.Converters;
 using Mycenae.Models;
 using NLog;
@@ -17,7 +16,6 @@ namespace Mycenae.Tasks
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        [ExecutionTimeMeasured]
         internal override void Execute()
         {
             Logger.Info("Starting insertion phase...");
