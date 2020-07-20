@@ -1,4 +1,5 @@
 ﻿using Cassandra;
+using Mycenae.Aspects;
 using Mycenae.Models;
 using Mycenae.Policies;
 using NLog;
@@ -112,6 +113,7 @@ namespace Mycenae.Tasks
             return results.Columns.Select(column => new CColumn(column.Name, column.Type)).ToList();
         }
 
+        [ExecutionTimeMeasured]
         protected static async Task ExecuteInsertAsync(IList<BoundStatement> insertStatements)
         {
             Logger.Info($"Inserting {insertStatements.Count} records into table...");
