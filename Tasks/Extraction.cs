@@ -1,23 +1,27 @@
 ﻿using Cassandra;
+using Microsoft.Extensions.Logging;
 using Mycenae.Aspects;
 using Mycenae.Models;
-using NLog;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Logger = NLog.Logger;
 
 namespace Mycenae.Tasks
 {
     internal class Extraction : MigrationTask
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static ILogger<Extraction> _logger;
+
+        public Extraction(ILogger<Extraction> logger) : base(logger)
+        {
+            _logger = logger;
+        }
 
         [ExecutionTimeMeasured]
         internal override void Execute()
         {
-            Logger.Info("Starting extraction phase...");
+            _logger.LogInformation("Starting extraction phase...");
 
             try
             {
@@ -29,11 +33,11 @@ namespace Mycenae.Tasks
             catch (AggregateException aggEx)
             {
                 foreach (Exception ex in aggEx.Flatten().InnerExceptions)
-                    Logger.Error(ex);
+                    _logger.LogError(ex.ToString());
             }
             catch (Exception ex)
             {
-                Logger.Info(ex);
+                _logger.LogError(ex.ToString());
             }
             finally
             {
@@ -43,7 +47,7 @@ namespace Mycenae.Tasks
 
         private static void ProcessRows(RowSet rows)
         {
-            Logger.Info("Processing rows...");
+            _logger.LogInformation("Processing rows...");
 
             _ = Directory.CreateDirectory(Path.GetDirectoryName(Settings.Values.Files.Extraction.Path));
             using var fileWriter = new StreamWriter(Settings.Values.Files.Extraction.Path);

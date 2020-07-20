@@ -1,26 +1,30 @@
 ﻿using Cassandra;
 using CsvHelper;
+using Microsoft.Extensions.Logging;
 using Mycenae.Aspects;
 using Mycenae.Converters;
 using Mycenae.Models;
-using NLog;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using Logger = NLog.Logger;
 
 namespace Mycenae.Tasks
 {
     internal class Insertion : MigrationTask
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static ILogger<Insertion> _logger;
+
+        public Insertion(ILogger<Insertion> logger) : base(logger)
+        {
+            _logger = logger;
+        }
 
         [ExecutionTimeMeasured]
         internal override void Execute()
         {
-            Logger.Info("Starting insertion phase...");
+            _logger.LogInformation("Starting insertion phase...");
 
             try
             {
@@ -35,11 +39,11 @@ namespace Mycenae.Tasks
             catch (AggregateException aggEx)
             {
                 foreach (Exception ex in aggEx.Flatten().InnerExceptions)
-                    Logger.Error(ex);
+                    _logger.LogError(ex.ToString());
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                _logger.LogError(ex.ToString());
             }
             finally
             {
@@ -49,7 +53,7 @@ namespace Mycenae.Tasks
 
         private static IEnumerable<dynamic> ReadRecordsFromFile()
         {
-            Logger.Info("Reading data from file...");
+            _logger.LogInformation("Reading data from file...");
 
             var reader = new StreamReader(Settings.Values.Files.Insertion.Path);
             var csvReader = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -61,7 +65,7 @@ namespace Mycenae.Tasks
 
         private static void ProcessRecords(IEnumerable<dynamic> records)
         {
-            Logger.Info("Processing records...");
+            _logger.LogInformation("Processing records...");
 
             IList<CColumn> columns = GetColumnsInfo(Settings.Values.Connections.Target.Keyspace, Settings.Values.Connections.Target.Table);
             PreparedStatement pStatement = PrepareStatementForInsertion(columns);

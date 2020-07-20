@@ -1,24 +1,28 @@
 ﻿using Cassandra;
+using Microsoft.Extensions.Logging;
 using Mycenae.Aspects;
 using Mycenae.Models;
 using Mycenae.Policies;
-using NLog;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Logger = NLog.Logger;
 
 namespace Mycenae.Tasks
 {
     internal abstract class MigrationTask
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static ILogger<MigrationTask> _logger;
 
         #region Clusters & sessions
         private static ICluster _sourceCluster, _targetCluster;
         private static ISession _sourceSession, _targetSession;
         #endregion
+
+        public MigrationTask(ILogger<MigrationTask> logger)
+        {
+            _logger = logger;
+        }
 
         internal abstract void Execute();
 
@@ -27,10 +31,9 @@ namespace Mycenae.Tasks
             if (_sourceSession != null)
                 return;
 
-            Logger.Info("Building source cluster and connecting session...");
+            _logger.LogInformation("Building source cluster and connecting session...");
 
-            _sourceCluster = 
-                Cluster.Builder()
+            _sourceCluster = Cluster.Builder()
                 .WithPort(Settings.Values.Connections.Source.Port)
                 .AddContactPoints(Settings.Values.Connections.Source.Endpoints)
                 .Build();
@@ -43,10 +46,9 @@ namespace Mycenae.Tasks
             if (_targetSession != null)
                 return;
 
-            Logger.Info("Building target cluster and connecting session...");
+            _logger.LogInformation("Building target cluster and connecting session...");
 
-            _targetCluster = 
-                Cluster.Builder()
+            _targetCluster = Cluster.Builder()
                 .WithPort(Settings.Values.Connections.Target.Port)
                 .WithRetryPolicy(new RetryPolicy())
                 .WithPoolingOptions(PoolingOptions.Create())
@@ -62,7 +64,7 @@ namespace Mycenae.Tasks
             if (_sourceSession == null || _sourceSession.IsDisposed)
                 return;
 
-            Logger.Info("Disposing source's cluster and session...");
+            _logger.LogInformation("Disposing source's cluster and session...");
 
             _sourceSession.Dispose();
             _sourceCluster.Dispose();
@@ -73,7 +75,7 @@ namespace Mycenae.Tasks
             if (_targetSession == null || _targetSession.IsDisposed)
                 return;
 
-            Logger.Info("Disposing target's cluster and session...");
+            _logger.LogInformation("Disposing target's cluster and session...");
 
             _targetSession.Dispose();
             _targetCluster.Dispose();
@@ -81,7 +83,7 @@ namespace Mycenae.Tasks
 
         protected static RowSet RetrieveRowsFromTable()
         {
-            Logger.Info("Retrieving rows from table...");
+            _logger.LogInformation("Retrieving rows from table...");
 
             string cql = $"SELECT * FROM {Settings.Values.Connections.Source.Keyspace}.{Settings.Values.Connections.Source.Table}";
             var statement = new SimpleStatement(cql);
@@ -104,7 +106,7 @@ namespace Mycenae.Tasks
 
         protected static IList<CColumn> GetColumnsInfo(string keyspace, string table)
         {
-            Logger.Info($"Getting columns info: [table] {table} [keyspace] {keyspace}");
+            _logger.LogInformation($"Getting columns info: [table] {table} [keyspace] {keyspace}");
 
             string cql = $"SELECT * FROM {keyspace}.{table} LIMIT 1";
             var statement = new SimpleStatement(cql);
@@ -116,7 +118,7 @@ namespace Mycenae.Tasks
         [ExecutionTimeMeasured]
         protected static async Task ExecuteInsertAsync(IList<BoundStatement> insertStatements)
         {
-            Logger.Info($"Inserting {insertStatements.Count} records into table...");
+            _logger.LogInformation($"Inserting {insertStatements.Count} records into table...");
 
             var tasks = new ConcurrentQueue<Task>();
 

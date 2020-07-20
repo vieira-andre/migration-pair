@@ -1,21 +1,26 @@
 ﻿using Cassandra;
+using Microsoft.Extensions.Logging;
 using Mycenae.Aspects;
 using Mycenae.Models;
 using NLog;
 using System;
 using System.Collections.Generic;
-using Logger = NLog.Logger;
 
 namespace Mycenae.Tasks
 {
     internal class EndToEnd : MigrationTask
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private static ILogger<EndToEnd> _logger;
+
+        public EndToEnd(ILogger<EndToEnd> logger) : base(logger)
+        {
+            _logger = logger;
+        }
 
         [ExecutionTimeMeasured]
         internal override void Execute()
         {
-            Logger.Info("Starting end-to-end migration...");
+            _logger.LogInformation("Starting end-to-end migration...");
 
             try
             {
@@ -31,11 +36,11 @@ namespace Mycenae.Tasks
             catch (AggregateException aggEx)
             {
                 foreach (Exception ex in aggEx.Flatten().InnerExceptions)
-                    Logger.Error(ex);
+                    _logger.LogError(ex.ToString());
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                _logger.LogError(ex.ToString());
             }
             finally
             {
@@ -51,7 +56,7 @@ namespace Mycenae.Tasks
 
             if (sourceColumns.Count != targetColumns.Count)
             {
-                Logger.Error("Tables from source and target have divergent number of columns.");
+                _logger.LogError("Tables from source and target have divergent number of columns.");
                 return false;
             }
 
@@ -71,11 +76,11 @@ namespace Mycenae.Tasks
 
             if (matches.Count == sourceColumns.Count)
             {
-                Logger.Info("Tables are compliant with each other.");
+                _logger.LogInformation("Tables are compliant with each other.");
                 return true;
             }
 
-            Logger.Error($"Tables are not compliant with each other: {sourceColumns.Count - matches.Count} mismatch(es) among {sourceColumns.Count} columns.");
+            _logger.LogError($"Tables are not compliant with each other: {sourceColumns.Count - matches.Count} mismatch(es) among {sourceColumns.Count} columns.");
 
             return false;
         }
