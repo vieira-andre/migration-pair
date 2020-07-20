@@ -2,12 +2,12 @@
 {
     public class SettingsModel
     {
-        private int insertionBatch;
+        private int _insertionBatch;
 
         public TaskToExecute TaskToExecute { get; set; }
         public Connections Connections { get; set; }
         public DataFiles Files { get; set; }
-        public int InsertionBatch { get => insertionBatch; set => insertionBatch = (value > 0) ? value : 100000; }
+        public int InsertionBatch { get => _insertionBatch; set => _insertionBatch = value > 0 ? value : 100000; }
     }
 
     public class Connections
@@ -24,20 +24,20 @@
 
     public class Connection
     {
-        private int port;
+        private int _port;
 
         public string[] Endpoints { get; set; }
-        public int Port { get => port; set { port = (value > 0) ? value : Cassandra.ProtocolOptions.DefaultPort; } }
+        public int Port { get => _port; set => _port = value > 0 ? value : Cassandra.ProtocolOptions.DefaultPort; }
         public string Keyspace { get; set; }
         public string Table { get; set; }
     }
 
     public class DataFile
     {
-        private string delimiter;
+        private string _delimiter;
 
         public string Path { get; set; }
         public bool HasHeader { get; set; }
-        public string Delimiter { get => delimiter; set { delimiter = string.IsNullOrEmpty(value) ? "," : value; } }
+        public string Delimiter { get => _delimiter; set => _delimiter = string.IsNullOrEmpty(value) ? "," : value; }
     }
 }

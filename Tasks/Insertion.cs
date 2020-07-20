@@ -99,9 +99,7 @@ namespace Mycenae.Tasks
             dynamic[] preparedRow = new dynamic[row.Count];
 
             for (int i = 0; i < row.Count; i++)
-            {
                 preparedRow[i] = DynamicTypeConverter.Convert(row[i], columns[i].DataType);
-            }
 
             return preparedRow;
         }

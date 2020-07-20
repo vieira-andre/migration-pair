@@ -19,7 +19,7 @@ namespace Mycenae.Tasks
         private static ISession _sourceSession, _targetSession;
         #endregion
 
-        public MigrationTask(ILogger<MigrationTask> logger)
+        protected MigrationTask(ILogger<MigrationTask> logger)
         {
             _logger = logger;
         }

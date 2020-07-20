@@ -6,8 +6,7 @@ namespace Mycenae
 {
     public static class Settings
     {
-        private static readonly IConfigurationRoot Configuration = 
-            new ConfigurationBuilder()
+        private static readonly IConfigurationRoot Configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
             .Build();

@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Logging;
 using Mycenae.Aspects;
 using Mycenae.Models;
-using NLog;
 using System;
 using System.Collections.Generic;
 

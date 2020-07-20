@@ -11,7 +11,7 @@ namespace Mycenae
 {
     public class Program
     {
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static IServiceProvider _serviceProvider;
 
         public static void Main()
@@ -25,11 +25,11 @@ namespace Mycenae
             }
             catch (Exception ex)
             {
-                _logger.Error(ex);
+                Logger.Error(ex);
             }
             finally
             {
-                _logger.Info("Ending application...");
+                Logger.Info("Ending application...");
             }
         }
 
