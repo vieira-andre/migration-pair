@@ -1,6 +1,6 @@
 ﻿namespace Mycenae.Models
 {
-    public enum TaskToPerform
+    public enum TaskToExecute
     {
         None,
         Extraction,

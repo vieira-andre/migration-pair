@@ -29,11 +29,11 @@ namespace Mycenae
 
         private static MigrationTask GetMigrationTaskInstance()
         {
-            return Settings.Values.TaskToPerform switch
+            return Settings.Values.TaskToExecute switch
             {
-                TaskToPerform.Extraction => new Extraction(),
-                TaskToPerform.Insertion => new Insertion(),
-                TaskToPerform.EndToEnd => new EndToEnd(),
+                TaskToExecute.Extraction => new Extraction(),
+                TaskToExecute.Insertion => new Insertion(),
+                TaskToExecute.EndToEnd => new EndToEnd(),
                 _ => throw new ArgumentException($"Config TaskToPerform is not properly specified.")
             };
         }

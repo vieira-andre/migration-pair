@@ -4,7 +4,7 @@
     {
         private int insertionBatch;
 
-        public TaskToPerform TaskToPerform { get; set; }
+        public TaskToExecute TaskToExecute { get; set; }
         public Connections Connections { get; set; }
         public DataFiles Files { get; set; }
         public int InsertionBatch { get => insertionBatch; set => insertionBatch = (value > 0) ? value : 100000; }
